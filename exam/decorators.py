@@ -26,3 +26,12 @@ class after(object):
 
     def __call__(self, instance):
         self.thing(instance)
+
+
+class around(object):
+
+    def __init__(self, thing):
+        self.thing = thing
+
+    def __call__(self, instance):
+        return self.thing(instance)
