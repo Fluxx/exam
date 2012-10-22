@@ -2,7 +2,7 @@
 Exam
 ####
 
-image:: https://dl.dropbox.com/u/3663715/exam.jpeg
+.. image:: https://dl.dropbox.com/u/3663715/exam.jpeg
 
 Exam is a Python toolkit for writing better tests.  It aims to remove a lot of
 the boiler plate testing code one often writes, while still following Python
