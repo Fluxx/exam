@@ -27,7 +27,7 @@ setup(
     version=__version__,
     author='Jeff Pollard',
     author_email='jeff.pollard@gmail.com',
-    url='https://github.com/fluxx/samsa',
+    url='https://github.com/fluxx/exam',
     description='Helpers for better testing.',
     license='MIT',
     packages=find_packages(),
