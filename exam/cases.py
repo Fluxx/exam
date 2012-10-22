@@ -1,27 +1,20 @@
+import inspect
+
 from decorators import before, after
-
-
-class Examify(type):
-
-    DECORATORS = dict(setUp=before, tearDown=after)
-
-    def __new__(cls, name, bases, attrs):
-        values = attrs.values()
-
-        for base in bases:
-            values.extend(vars(base).values())
-
-        for method, kind in cls.DECORATORS.items():
-            key = '%s_methods' % method
-            attrs.setdefault(key, [])
-            [attrs[key].append(v) for v in values if type(v) is kind]
-
-        return super(Examify, cls).__new__(cls, name, bases, attrs)
 
 
 class Exam(object):
 
-    __metaclass__ = Examify
+    def attrs_of_type(self, kind):
+        for base in inspect.getmro(type(self)):
+            for value in vars(base).values():
+                if type(value) is kind:
+                    yield value
 
-    setUp = lambda self: [method(self) for method in self.setUp_methods]
-    tearDown = lambda self: [method(self) for method in self.tearDown_methods]
+    def setUp(self):
+        for value in self.attrs_of_type(before):
+            value(self)
+
+    def tearDown(self):
+        for value in self.attrs_of_type(after):
+            value(self)
