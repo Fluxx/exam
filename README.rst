@@ -97,6 +97,8 @@ tools.  This is a sample class which describes all of them::
             roast.perform()
             tracker.assert_has_calls([mock.call.heat(), mock.call.cool()])
 
+        # The mock_import helper is a context used when you need to
+
 License
 -------
 

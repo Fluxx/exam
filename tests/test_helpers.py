@@ -1,7 +1,7 @@
 from unittest2 import TestCase
 from mock import patch, Mock
 
-from exam.helpers import rm_f, track
+from exam.helpers import rm_f, track, mock_import
 from exam import fixture
 
 from describe import expect
@@ -37,3 +37,16 @@ class TestTrack(TestCase):
         tracker = track(foo=self.foo_mock, bar=self.bar_mock)
         expect(tracker.foo).to == self.foo_mock
         expect(tracker.bar).to == self.bar_mock
+
+
+class TestMockImport(TestCase):
+
+    def test_is_a_context_manager_that_yields_patched_import(self):
+        with mock_import('foo') as mock_foo:
+            import foo
+            expect(foo).to == mock_foo
+
+    def test_mocks_import_for_packages(self):
+        with mock_import('foo.bar.baz') as mock_baz:
+            import foo.bar.baz
+            expect(foo.bar.baz).to == mock_baz
