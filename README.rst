@@ -23,10 +23,13 @@ tools.  This is a sample class which describes all of them::
     from exam import before, after, around
     from exam import fixture
     from exam.cases import Exam
+    from exam.helpers import track
 
     import unittest
+    import mock
 
     from coffee import Grounds, CoffeMaker
+    from coffee import roast
 
 
     # The Exam mixin is needed for all of the @before, @after and @around hooks to
@@ -78,6 +81,21 @@ tools.  This is a sample class which describes all of them::
             self.coffee_maker.put_on_stove()
             yield
             self.coffee_maker.take_off_stove()
+
+        # The track helper returns a newly constructed ``MagicMock`` with each
+        # mock passed in as a value of a kwarg attached at the propery named for
+        # the key of the kwarg.
+        #
+        # For example, below track creates a new mock with ``tracker.foo` as the
+        # foo_mock and ``tracker.bar`` as the bar_mock.  This helper is mostly
+        # useful when you want to track the order mock calls made in a test
+        # method.
+        @mock.patch('coffee.roast.heat')
+        @mock.patch('coffee.roast.cool')
+        def test_coffee_roasting_heats_then_cools_the_beans(self, heat, cool):
+            tracker = track(heat=heat, cool=cool)
+            roast.perform()
+            tracker.assert_has_calls([mock.call.heat(), mock.call.cool()])
 
 License
 -------

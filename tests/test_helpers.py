@@ -1,7 +1,10 @@
 from unittest2 import TestCase
-from mock import patch
+from mock import patch, Mock
 
-from exam.helpers import rm_f
+from exam.helpers import rm_f, track
+from exam import fixture
+
+from describe import expect
 
 
 @patch('exam.helpers.shutil')
@@ -18,3 +21,19 @@ class TestRmrf(TestCase):
         shutil.rmtree.side_effect = OSError
         rm_f(self.path)
         os.remove.assert_called_once_with(self.path)
+
+
+class TestTrack(TestCase):
+
+    @fixture
+    def foo_mock(self):
+        return Mock()
+
+    @fixture
+    def bar_mock(self):
+        return Mock()
+
+    def test_makes_new_mock_and_attaches_each_kwarg_to_it(self):
+        tracker = track(foo=self.foo_mock, bar=self.bar_mock)
+        expect(tracker.foo).to == self.foo_mock
+        expect(tracker.bar).to == self.bar_mock
