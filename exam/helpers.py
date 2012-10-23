@@ -1,6 +1,6 @@
 import shutil
 import os
-import contextlib
+import functools
 
 from mock import MagicMock, patch
 
@@ -51,3 +51,16 @@ class mock_import(patch.dict):
     def __enter__(self):
         super(mock_import, self).__enter__()
         return self.modules[self.path]
+
+    def __call__(self, func):
+        super(mock_import, self).__call__(func)
+
+        @functools.wraps(func)
+        def inner(*args, **kwargs):
+            args = list(args)
+            args.append(self.modules[self.path])
+
+            with self:
+                func(*args, **kwargs)
+
+        return inner

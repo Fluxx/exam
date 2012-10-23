@@ -50,3 +50,8 @@ class TestMockImport(TestCase):
         with mock_import('foo.bar.baz') as mock_baz:
             import foo.bar.baz
             expect(foo.bar.baz).to == mock_baz
+
+    @mock_import('foo')
+    def test_can_be_used_as_a_decorator_too(self, mock_foo):
+        import foo
+        expect(foo).to == mock_foo
