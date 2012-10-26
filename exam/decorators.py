@@ -44,15 +44,17 @@ class patcher(object):
 
     class wrapper(object):
 
-        def __init__(self, func, target, args, kwargs):
+        def __init__(self, func, patcher):
             self.func = func
-            self.target = target
-            self.args = args
-            self.kwargs = kwargs
+            self.patcher = patcher
 
         def __call__(self, instance):
-            new_value = self.func(instance)
-            return patch(self.target, new_value, *self.args, **self.kwargs)
+            return patch(
+                self.patcher.target,
+                self.func(instance),
+                *self.patcher.args,
+                **self.patcher.kwargs
+            )
 
     def __init__(self, target, *args, **kwargs):
         self.target = target
@@ -60,4 +62,4 @@ class patcher(object):
         self.kwargs = kwargs
 
     def __call__(self, func):
-        return self.wrapper(func, self.target, self.args, self.kwargs)
+        return self.wrapper(func, self)

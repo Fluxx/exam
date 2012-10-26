@@ -26,7 +26,6 @@ class Exam(object):
         # Run the patcher function, and set the results
         for wrapped in self.attrs_of_type(patcher.wrapper):
             ptchr = wrapped(self)
-            # print 'patching', wrapped.func
             setattr(self, wrapped.func.__name__, ptchr.start())
             self.addCleanup(ptchr.stop)
 
