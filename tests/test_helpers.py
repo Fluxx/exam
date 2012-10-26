@@ -2,7 +2,7 @@ from unittest2 import TestCase
 from mock import patch, Mock
 
 from exam.helpers import rm_f, track, mock_import
-from exam import fixture
+from exam.decorators import fixture
 
 from describe import expect
 

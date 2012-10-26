@@ -1,7 +1,7 @@
 from unittest2 import TestCase
 from describe import expect
 
-from exam import fixture
+from exam.decorators import fixture
 
 
 class Dummy(object):
