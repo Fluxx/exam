@@ -1,16 +1,27 @@
 from mock import patch
+from functools import partial
+import types
 
 
 class fixture(object):
 
-    def __init__(self, thing):
+    def __init__(self, thing, *args, **kwargs):
         self.thing = thing
+        self.args = args
+        self.kwargs = kwargs
 
-    def __get__(self, obj, type=None):
-        if not self.thing in obj.__dict__:
-            obj.__dict__[self.thing] = self.thing(obj)
+    def __get__(self, instance, type=None):
+        if not self.thing in instance.__dict__:
+            applied = self.__apply(instance)(*self.args, **self.kwargs)
+            instance.__dict__[self.thing] = applied
 
-        return obj.__dict__[self.thing]
+        return instance.__dict__[self.thing]
+
+    def __apply(self, instance):
+        if type(self.thing) in (type, types.MethodType):
+            return self.thing
+        else:
+            return partial(self.thing, instance)
 
 
 class before(object):
