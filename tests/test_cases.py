@@ -28,6 +28,8 @@ class DummyTest(Exam, FakeTest):
     def dummy_thing(self):
         return sentinel.mock
 
+    inline_dummy_thing = patcher('tests.dummy.thing_func', return_value=5)
+
     def __init__(self):
         self.calls = []
         super(DummyTest, self).__init__()
@@ -130,13 +132,17 @@ class TestExam(Exam, TestCase):
         self.case.cleanups[0]()
         expect(self.other_thing).to != sentinel.mock
 
-    def test_patcher_property_works_on_sublasses(self):
-        self.subclass_case.setUp()
-        expect(self.subclass_case.dummy_thing).to == sentinel.mock
-
     def test_patcher_lifecycle_works_on_subclasses(self):
         expect(self.other_thing).to != sentinel.mock
         self.subclass_case.setUp()
         expect(self.other_thing).to == sentinel.mock
         self.subclass_case.cleanups[0]()
         expect(self.other_thing).to != sentinel.mock
+
+    def test_patcher_returns_magic_mock_if_no_(self):
+        expect(self.other_thing).to != sentinel.mock
+        self.subclass_case.setUp()
+        expect(self.other_thing).to == sentinel.mock
+        self.subclass_case.cleanups[0]()
+        expect(self.other_thing).to != sentinel.mock
+
