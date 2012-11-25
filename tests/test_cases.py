@@ -1,4 +1,4 @@
-from mock import sentinel
+from mock import sentinel, MagicMock
 from unittest2 import TestCase
 import itertools
 
@@ -7,7 +7,7 @@ from exam.cases import Exam
 
 from describe import expect
 
-from dummy import get_thing
+from dummy import get_thing, get_it
 
 
 class FakeTest(object):
@@ -28,7 +28,7 @@ class DummyTest(Exam, FakeTest):
     def dummy_thing(self):
         return sentinel.mock
 
-    inline_dummy_thing = patcher('tests.dummy.thing_func', return_value=5)
+    dummy_it = patcher('tests.dummy.it', return_value=12)
 
     def __init__(self):
         self.calls = []
@@ -89,6 +89,10 @@ class TestExam(Exam, TestCase):
     def other_thing(self):
         return get_thing()
 
+    @property
+    def other_it(self):
+        return get_it()
+
     def test_before_adds_each_method_to_set_up(self):
         expect(self.case.calls).to == []
         self.case.setUp()
@@ -129,20 +133,19 @@ class TestExam(Exam, TestCase):
         expect(self.other_thing).to != sentinel.mock
         self.case.setUp()
         expect(self.other_thing).to == sentinel.mock
-        self.case.cleanups[0]()
+        [cleanup() for cleanup in self.case.cleanups]
         expect(self.other_thing).to != sentinel.mock
 
     def test_patcher_lifecycle_works_on_subclasses(self):
         expect(self.other_thing).to != sentinel.mock
         self.subclass_case.setUp()
         expect(self.other_thing).to == sentinel.mock
-        self.subclass_case.cleanups[0]()
+        [cleanup() for cleanup in self.subclass_case.cleanups]
         expect(self.other_thing).to != sentinel.mock
 
-    def test_patcher_returns_magic_mock_if_no_(self):
-        expect(self.other_thing).to != sentinel.mock
-        self.subclass_case.setUp()
-        expect(self.other_thing).to == sentinel.mock
-        self.subclass_case.cleanups[0]()
-        expect(self.other_thing).to != sentinel.mock
-
+    def test_patcher_patches_with_a_magic_mock_if_no_function_decorated(self):
+        expect(self.other_it()).to != 12
+        self.case.setUp()
+        expect(self.other_it()).to == 12
+        self.case.cleanups[0]()
+        expect(self.other_thing).to != 12

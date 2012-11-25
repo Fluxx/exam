@@ -22,12 +22,25 @@ class MultipleGeneratorsContextManager(object):
 class Exam(object):
 
     @before
-    def setup_patchers(self):
-        # Run the patcher function, and set the results
+    def setup_wrapped_patchers(self):
         for wrapped in self.attrs_of_type(patcher.wrapper):
             ptchr = wrapped(self)
             setattr(self, wrapped.func.__name__, ptchr.start())
             self.addCleanup(ptchr.stop)
+
+    @before
+    def setup_patchers(self):
+        for ptchr in self.attrs_of_type(patcher):
+            # Extract out patcher.wrapper, via a patcher(), then call that
+            # wrapper to extract out the actual patch object
+            wrapped = ptchr(None)
+            patch_object = wrapped(self)
+            patch_object.start()
+            self.addCleanup(patch_object.stop)
+
+            # And add a handle back to the mock patch object for the local
+            # patch object
+            ptchr.applied = patch_object
 
     def attrs_of_type(self, kind):
         for base in inspect.getmro(type(self)):

@@ -1,4 +1,4 @@
-from mock import patch
+from mock import patch, MagicMock
 from functools import partial
 import types
 
@@ -60,17 +60,26 @@ class patcher(object):
             self.patcher = patcher
 
         def __call__(self, instance):
+            kwargs = dict()
+            kwargs.update(self.patcher.kwargs)
+
+            if self.func:
+                kwargs['new'] = self.func(instance)
+
             return patch(
                 self.patcher.target,
-                self.func(instance),
                 *self.patcher.args,
-                **self.patcher.kwargs
+                **kwargs
             )
 
     def __init__(self, target, *args, **kwargs):
         self.target = target
         self.args = args
         self.kwargs = kwargs
+        self.applied = None
+
+    def __get__(self):
+        return self.applied
 
     def __call__(self, func):
         return self.wrapper(func, self)
