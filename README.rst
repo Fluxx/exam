@@ -131,7 +131,8 @@ Usage of Exam is best described with a hypothetical test case which exhibits all
         # (``MagicMock``), then ``patcher`` can simply be used as an inline
         # as a function.  This method still starts and stops the patcher when
         # needed, and returns the constructed ``MagicMock`` object, which you
-        # can set as a class attribute.
+        # can set as a class attribute.  Exam will add the ``MagicMock`` object
+        # to the test case as an instance attribute automatically.
         logger = patcher('coffee.logger')
 
         # The ``track`` helper is intended to assist in tracking call orders of
