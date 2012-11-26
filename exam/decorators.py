@@ -1,4 +1,4 @@
-from mock import patch, MagicMock
+from mock import patch
 from functools import partial
 import types
 
@@ -24,7 +24,7 @@ class fixture(object):
             return partial(self.thing, instance)
 
 
-class before(object):
+class base(object):
 
     def __init__(self, thing):
         self.thing = thing
@@ -33,22 +33,16 @@ class before(object):
         self.thing(instance)
 
 
-class after(object):
-
-    def __init__(self, thing):
-        self.thing = thing
-
-    def __call__(self, instance):
-        self.thing(instance)
+class before(base):
+    pass
 
 
-class around(object):
+class after(base):
+    pass
 
-    def __init__(self, thing):
-        self.thing = thing
 
-    def __call__(self, instance):
-        return self.thing(instance)
+class around(base):
+    pass
 
 
 class patcher(object):
