@@ -53,33 +53,17 @@ class around(object):
 
 class patcher(object):
 
-    class wrapper(object):
-
-        def __init__(self, func, patcher):
-            self.func = func
-            self.patcher = patcher
-
-        def __call__(self, instance):
-            kwargs = dict()
-            kwargs.update(self.patcher.kwargs)
-
-            if self.func:
-                kwargs['new'] = self.func(instance)
-
-            return patch(
-                self.patcher.target,
-                *self.patcher.args,
-                **kwargs
-            )
-
-    def __init__(self, target, *args, **kwargs):
-        self.target = target
+    def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        self.applied = None
-
-    def __get__(self):
-        return self.applied
+        self.func = None
 
     def __call__(self, func):
-        return self.wrapper(func, self)
+        self.func = func
+        return self
+
+    def build_patch(self, instance):
+        if self.func:
+            self.kwargs['new'] = self.func(instance)
+
+        return patch(*self.args, **self.kwargs)
