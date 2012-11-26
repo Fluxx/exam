@@ -151,7 +151,7 @@ Usage of Exam is best described with a hypothetical test case which exhibits all
         # as the ``cool_mock`` and ``tracker.heat`` as the ``heat_mock``.
         @mock.patch('coffee.roast.heat')
         @mock.patch('coffee.roast.cool')
-        def test_roasting_heats_then_cools_beans(self, heat_mock, cool_mock):
+        def test_roasting_heats_then_cools_beans(self, cool_mock, heat_mock):
             tracker = track(heat=heat_mock, cool=cool_mock)
             roast.perform()
             tracker.assert_has_calls([mock.call.heat(), mock.call.cool()])
