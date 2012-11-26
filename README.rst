@@ -27,7 +27,7 @@ Unfortunately, the common pattern for writing Python unit tests tends to not off
 Usage
 --------
 
-Usage of Exam is best described with a hypothetical test case which exhibits all of exam' features:
+Usage of Exam is best described with a hypothetical test case which exhibits all of exam's features:
 
 .. code:: python
 
@@ -105,7 +105,9 @@ Usage of Exam is best described with a hypothetical test case which exhibits all
             self.coffee_maker.put_on_stove()
             yield
             self.coffee_maker.take_off_stove()
-        # The ``@patcher`` is shorthand for the following boiler place code:
+
+        # The ``@patcher`` decorator is shorthand for the following boiler plate
+        # code:
         #
         #     def setUp(self):
         #         self.stats_patcher = patch('mylib.stats', new=dummy_stats)
@@ -115,8 +117,11 @@ Usage of Exam is best described with a hypothetical test case which exhibits all
         #         self.stats_patcher.stop()
         #
         # Often, manually controlling a patch's start/stop is done to provide a
-        # test case property (here, ``self.stats``) for the mock object, so as
-        # to alter its configuration during certain tests.
+        # test case property (here, ``self.stats``) for the mock object you are
+        # patching with.  This is handy if you want the mock to have defaut
+        # behavior for most tests, but change it slightly for certain ones --
+        # i.e absorb all calls most of the time, but for certain tests have it
+        # raise an exception.
         #
         # The above code can simply be written with the ``@patcher`` as:
         @patcher
@@ -150,7 +155,6 @@ Usage of Exam is best described with a hypothetical test case which exhibits all
             tracker = track(heat=heat_mock, cool=cool_mock)
             roast.perform()
             tracker.assert_has_calls([mock.call.heat(), mock.call.cool()])
-
 
 License
 -------
