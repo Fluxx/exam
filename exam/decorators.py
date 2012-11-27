@@ -30,7 +30,7 @@ class base(object):
         self.thing = thing
 
     def __call__(self, instance):
-        self.thing(instance)
+        return self.thing(instance)
 
 
 class before(base):
