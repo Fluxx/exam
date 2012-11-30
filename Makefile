@@ -8,4 +8,7 @@ release:
 	git push origin $(VERSION)
 	python setup.py sdist upload
 
-.PHONY: test release
+watch:
+	bundle exec guard
+
+.PHONY: test release watch
