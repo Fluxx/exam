@@ -10,9 +10,9 @@ try:
 except ImportError:
     pass
 
-install_requires = []
+install_requires = ['mock']
 lint_requires = ['pep8', 'pyflakes']
-tests_require = ['mock', 'nose', 'unittest2', 'describe==1.0.0beta1']
+tests_require = ['nose', 'unittest2', 'describe==1.0.0beta1']
 
 dependency_links = [
     'https://github.com/jeffh/describe/tarball/dev#egg=describe'
