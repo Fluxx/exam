@@ -3,8 +3,6 @@ import sys
 
 from setuptools import setup, find_packages
 
-from exam import __version__
-
 try:
     import multiprocessing
 except ImportError:
@@ -24,7 +22,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='exam',
-    version=__version__,
+    version='0.4.0',
     author='Jeff Pollard',
     author_email='jeff.pollard@gmail.com',
     url='https://github.com/fluxx/exam',
