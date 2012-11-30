@@ -1,1 +1,2 @@
-__version__ = '0.4.0'
+from exam.cases import Exam
+from exam.decorators import before, after, around, fixture, patcher

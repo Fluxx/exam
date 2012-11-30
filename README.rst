@@ -36,6 +36,13 @@ Exam has some useful decorators to make your tests easier to write and understan
 
 Note that the ``@fixture`` decorator works without needing to be defined inside of an Exam class.  Still, it's a best practice to add the ``Exam`` mixin to your test cases.
 
+All of the decorators in ``exam.decorators``, as well as the ``Exam`` test case are available for import from the main ``exam`` package as well. I.e.:
+
+.. code:: python
+
+    from exam import Exam
+    from exam import fixture, before, after, around, patcher
+
 ``exam.decorators.fixture``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
