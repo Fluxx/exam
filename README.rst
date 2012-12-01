@@ -112,7 +112,7 @@ The compliment to ``@before``, ``@after`` adds the method to the list of methods
 
     class MyTest(Exam, TestCase):
 
-        @before
+        @after
         def remove_temp_files(self):
             myapp.remove_temp_files()
 
