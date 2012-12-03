@@ -123,7 +123,7 @@ The ``@patcher`` decorator is shorthand for the following boiler plate code:
 
 .. code:: python
 
-    from exam.decorators import patcher
+    from mock import patch
 
      def setUp(self):
          self.stats_patcher = patch('mylib.stats', new=dummy_stats)
@@ -143,7 +143,7 @@ Using the ``@patcher`` decorator, the above code can simply be written as:
 
     class MyTest(Exam, TestCase):
 
-       @patcher
+       @patcher('mylib.stats')
        def stats(self):
            return dummy_stats
 
