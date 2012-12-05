@@ -1,6 +1,8 @@
 import inspect
 
 from decorators import before, after, around, patcher
+from objects import no_op
+
 
 
 class MultipleGeneratorsContextManager(object):
@@ -35,10 +37,14 @@ class Exam(object):
                     yield attr, value
 
     def setUp(self):
+        getattr(super(Exam, self), 'setUp', no_op)()
+
         for _, value in self.attrs_of_type(before):
             value(self)
 
     def tearDown(self):
+        getattr(super(Exam, self), 'tearDown', no_op)()
+
         for _, value in self.attrs_of_type(after):
             value(self)
 

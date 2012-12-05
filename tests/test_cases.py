@@ -14,6 +14,14 @@ class FakeTest(object):
 
     def __init__(self):
         self.cleanups = []
+        self.setups = 0
+        self.teardowns = 0
+
+    def setUp(self):
+        self.setups += 1
+
+    def tearDown(self):
+        self.teardowns += 1
 
     def run(self, *args, **kwargs):
         self.state_when_run = list(self.calls)
@@ -149,3 +157,13 @@ class TestExam(Exam, TestCase):
         expect(self.other_it()).to == 12
         self.case.cleanups[0]()
         expect(self.other_thing).to != 12
+
+    def test_calls_super_setup(self):
+        expect(self.case.setups).to == 0
+        self.case.setUp()
+        expect(self.case.setups).to == 1
+
+    def test_calls_super_teardown(self):
+        expect(self.case.teardowns).to == 0
+        self.case.tearDown()
+        expect(self.case.teardowns).to == 1
