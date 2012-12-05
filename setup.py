@@ -10,10 +10,10 @@ except ImportError:
 
 install_requires = ['mock']
 lint_requires = ['pep8', 'pyflakes']
-tests_require = ['nose', 'unittest2', 'describe==1.0.0beta1']
+tests_require = ['nose', 'unittest2', 'describe']
 
 dependency_links = [
-    'https://github.com/jeffh/describe/tarball/dev#egg=describe'
+    'https://github.com/jeffh/describe/archive/907b42e4947f88111667a39e23bc5d5e0bf167fd.tar.gz#egg=describe',
 ]
 
 setup_requires = []
@@ -29,6 +29,7 @@ setup(
     description='Helpers for better testing.',
     license='MIT',
     packages=find_packages(),
+    dependency_links=dependency_links,
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
