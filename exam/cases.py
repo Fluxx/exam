@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import inspect
 
 from exam.decorators import before, after, around, patcher  # NOQA
-from exam.objects import no_op  # NOQA
+from exam.objects import noop  # NOQA
 
 
 class MultipleGeneratorsContextManager(object):
@@ -38,13 +38,13 @@ class Exam(object):
                     yield attr, value
 
     def setUp(self):
-        getattr(super(Exam, self), 'setUp', no_op)()
+        getattr(super(Exam, self), 'setUp', noop)()
 
         for _, value in self.attrs_of_type(before):
             value(self)
 
     def tearDown(self):
-        getattr(super(Exam, self), 'tearDown', no_op)()
+        getattr(super(Exam, self), 'tearDown', noop)()
 
         for _, value in self.attrs_of_type(after):
             value(self)
