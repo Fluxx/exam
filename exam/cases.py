@@ -1,8 +1,9 @@
+from __future__ import absolute_import
+
 import inspect
 
-from decorators import before, after, around, patcher
-from objects import no_op
-
+from exam.decorators import before, after, around, patcher  # NOQA
+from exam.objects import no_op  # NOQA
 
 
 class MultipleGeneratorsContextManager(object):
