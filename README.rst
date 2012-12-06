@@ -251,7 +251,7 @@ Helpful fixtures that you may want to use in your tests:
 
 Useful objectgs for use in testing:
 
-``exam.objects.no_op`` - callable object that always returns ``None``. no matter how it was called.
+``exam.objects.noop`` - callable object that always returns ``None``. no matter how it was called.
 
 License
 -------
