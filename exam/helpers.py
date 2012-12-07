@@ -25,6 +25,44 @@ def track(**mocks):
     return tracker
 
 
+def decorate(obj, methodname, wrapper):
+    """
+    Decorates an existing method on an object with the provided wrapper.
+
+    ::
+
+        >>> def ensure_primary_key_is_set():
+        ...     assert model.pk is None
+        ...     saved = yield
+        ...     aasert model is saved
+        ...     assert model.pk is not None
+        ...
+        >>> decorate(model, 'save', ensure_primary_key_is_set)
+        >>> model.save()
+
+    :param obj: the object that has the method to be decorated
+    :type obj: :class:`object`
+    :param methodname: the name method to decorate
+    :type methodname: :class:`str`
+    :param wrapper: the wrapper
+    :type wrapper: generator callable
+    """
+    original = getattr(obj, methodname)
+
+    def replacement(*args, **kwargs):
+        wrapfn = wrapper()
+        wrapfn.send(None)
+        result = original(*args, **kwargs)
+        try:
+            wrapfn.send(result)
+        except StopIteration:
+            return result
+        else:
+            raise AssertionError('Generator did not stop')
+
+    setattr(obj, methodname, replacement)
+
+
 class mock_import(patch.dict):
 
     FROM_X_GET_Y = lambda s, x, y: getattr(x, y)
