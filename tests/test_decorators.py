@@ -24,7 +24,6 @@ class Dummy(object):
         return object()
 
     inline = fixture(int, 5)
-    inline_obj = fixture(object)
     inline_func = fixture(lambda self: self.outside)
     inline_func_with_args = fixture(lambda *a, **k: (a, k), 1, 2, a=3)
     inline_from_method = fixture(Outer.meth)
