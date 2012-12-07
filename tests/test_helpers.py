@@ -66,18 +66,18 @@ class TestDecorate(TestCase):
     def test_decorate(self):
         ex = self.Example()
 
-        def wrapper():
+        def counter():
             result = yield
             assert result is sentinel.METHOD_RESULT
-            wrapper.calls += 1
+            counter.calls += 1
 
-        wrapper.calls = 0
+        counter.calls = 0
 
-        decorate(ex, 'method', wrapper)
-        expect(wrapper.calls).to == 0
+        decorate(ex, 'method', counter)
+        expect(counter.calls).to == 0
         assert ex.method() is sentinel.METHOD_RESULT
-        expect(wrapper.calls).to == 1
+        expect(counter.calls).to == 1
 
         ex.method.unwrap()
         assert ex.method() is sentinel.METHOD_RESULT
-        expect(wrapper.calls).to == 1
+        expect(counter.calls).to == 1
