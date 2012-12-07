@@ -79,5 +79,5 @@ class TestDecorate(TestCase):
         expect(wrapper.calls).to == 1
 
         ex.method.unwrap()
-        ex.method()
+        assert ex.method() is sentinel.METHOD_RESULT
         expect(wrapper.calls).to == 1
