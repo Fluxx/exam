@@ -10,7 +10,7 @@ from describe import expect
 from dummy import get_thing, get_it
 
 
-class FakeTest(object):
+class SimpleTestCase(object):
 
     def __init__(self):
         self.cleanups = []
@@ -30,7 +30,7 @@ class FakeTest(object):
         self.cleanups.append(func)
 
 
-class DummyTest(Exam, FakeTest):
+class DummyTest(Exam, SimpleTestCase):
 
     @patcher('tests.dummy.thing')
     def dummy_thing(self):
