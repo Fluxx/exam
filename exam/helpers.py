@@ -60,6 +60,14 @@ def decorate(obj, methodname, wrapper):
         else:
             raise AssertionError('Generator did not stop')
 
+    def unwrap():
+        """
+        Restores the method to it's original (unwrapped) state.
+        """
+        setattr(obj, methodname, original)
+
+    replacement.unwrap = unwrap
+
     setattr(obj, methodname, replacement)
 
 
