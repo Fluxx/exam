@@ -1,10 +1,16 @@
-from unittest2 import TestCase
 from describe import expect
+from mock import sentinel
+from unittest2 import TestCase
 
-from exam.objects import noop
+from exam.objects import always, noop
 
 
-class TestNoOp(TestCase):
+class TestAlways(TestCase):
+
+    def test_always_returns_identity(self):
+        fn = always(sentinel.RESULT_VALUE)
+        assert fn() is sentinel.RESULT_VALUE
+        assert fn(1, key='value') is sentinel.RESULT_VALUE
 
     def test_can_be_called_with_anything(self):
         noop()
