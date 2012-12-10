@@ -1,4 +1,4 @@
-VERSION = $(shell python -c 'import exam; print exam.__version__')
+VERSION = $(shell python setup.py --version)
 
 test:
 	python setup.py nosetests
