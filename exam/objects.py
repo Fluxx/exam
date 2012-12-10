@@ -1,4 +1,7 @@
 from __future__ import absolute_import
 
-noop = lambda *a, **k: None
-no_op = noop
+
+def always(value):
+    return lambda *a, **k: value
+
+noop = no_op = always(None)
