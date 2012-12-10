@@ -1,7 +1,7 @@
 from unittest2 import TestCase
-from mock import patch, Mock
+from mock import patch, Mock, sentinel
 
-from exam.helpers import rm_f, track, mock_import
+from exam.helpers import intercept, rm_f, track, mock_import
 from exam.decorators import fixture
 
 from describe import expect
@@ -55,3 +55,29 @@ class TestMockImport(TestCase):
     def test_can_be_used_as_a_decorator_too(self, mock_foo):
         import foo
         expect(foo).to == mock_foo
+
+
+class TestIntercept(TestCase):
+
+    class Example(object):
+        def method(self):
+            return sentinel.METHOD_RESULT
+
+    def test_intercept(self):
+        ex = self.Example()
+
+        def counter():
+            result = yield
+            assert result is sentinel.METHOD_RESULT
+            counter.calls += 1
+
+        counter.calls = 0
+
+        intercept(ex, 'method', counter)
+        expect(counter.calls).to == 0
+        assert ex.method() is sentinel.METHOD_RESULT
+        expect(counter.calls).to == 1
+
+        ex.method.unwrap()
+        assert ex.method() is sentinel.METHOD_RESULT
+        expect(counter.calls).to == 1
