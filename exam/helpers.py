@@ -25,6 +25,53 @@ def track(**mocks):
     return tracker
 
 
+def intercept(obj, methodname, wrapper):
+    """
+    Wraps an existing method on an object with the provided generator, which
+    will be "sent" the value when it yields control.
+
+    ::
+
+        >>> def ensure_primary_key_is_set():
+        ...     assert model.pk is None
+        ...     saved = yield
+        ...     aasert model is saved
+        ...     assert model.pk is not None
+        ...
+        >>> intercept(model, 'save', ensure_primary_key_is_set)
+        >>> model.save()
+
+    :param obj: the object that has the method to be wrapped
+    :type obj: :class:`object`
+    :param methodname: the name of the method that will be wrapped
+    :type methodname: :class:`str`
+    :param wrapper: the wrapper
+    :type wrapper: generator callable
+    """
+    original = getattr(obj, methodname)
+
+    def replacement(*args, **kwargs):
+        wrapfn = wrapper()
+        wrapfn.send(None)
+        result = original(*args, **kwargs)
+        try:
+            wrapfn.send(result)
+        except StopIteration:
+            return result
+        else:
+            raise AssertionError('Generator did not stop')
+
+    def unwrap():
+        """
+        Restores the method to it's original (unwrapped) state.
+        """
+        setattr(obj, methodname, original)
+
+    replacement.unwrap = unwrap
+
+    setattr(obj, methodname, replacement)
+
+
 class mock_import(patch.dict):
 
     FROM_X_GET_Y = lambda s, x, y: getattr(x, y)
