@@ -1,7 +1,7 @@
 from unittest2 import TestCase
 from mock import patch, Mock, sentinel
 
-from exam.helpers import decorate, rm_f, track, mock_import
+from exam.helpers import intercept, rm_f, track, mock_import
 from exam.decorators import fixture
 
 from describe import expect
@@ -57,13 +57,13 @@ class TestMockImport(TestCase):
         expect(foo).to == mock_foo
 
 
-class TestDecorate(TestCase):
+class TestIntercept(TestCase):
 
     class Example(object):
         def method(self):
             return sentinel.METHOD_RESULT
 
-    def test_decorate(self):
+    def test_intercept(self):
         ex = self.Example()
 
         def counter():
@@ -73,7 +73,7 @@ class TestDecorate(TestCase):
 
         counter.calls = 0
 
-        decorate(ex, 'method', counter)
+        intercept(ex, 'method', counter)
         expect(counter.calls).to == 0
         assert ex.method() is sentinel.METHOD_RESULT
         expect(counter.calls).to == 1

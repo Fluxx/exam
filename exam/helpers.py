@@ -25,9 +25,10 @@ def track(**mocks):
     return tracker
 
 
-def decorate(obj, methodname, wrapper):
+def intercept(obj, methodname, wrapper):
     """
-    Decorates an existing method on an object with the provided wrapper.
+    Wraps an existing method on an object with the provided generator, which
+    will be "sent" the value when it yields control.
 
     ::
 
@@ -37,12 +38,12 @@ def decorate(obj, methodname, wrapper):
         ...     aasert model is saved
         ...     assert model.pk is not None
         ...
-        >>> decorate(model, 'save', ensure_primary_key_is_set)
+        >>> intercept(model, 'save', ensure_primary_key_is_set)
         >>> model.save()
 
-    :param obj: the object that has the method to be decorated
+    :param obj: the object that has the method to be wrapped
     :type obj: :class:`object`
-    :param methodname: the name method to decorate
+    :param methodname: the name of the method that will be wrapped
     :type methodname: :class:`str`
     :param wrapper: the wrapper
     :type wrapper: generator callable
