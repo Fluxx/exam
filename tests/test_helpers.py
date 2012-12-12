@@ -60,14 +60,15 @@ class TestMockImport(TestCase):
 class TestIntercept(TestCase):
 
     class Example(object):
-        def method(self, parameter):
+        def method(self, positional, keyword):
             return sentinel.METHOD_RESULT
 
     def test_intercept(self):
         ex = self.Example()
 
-        def counter(parameter):
-            assert parameter is sentinel.METHOD_PARAMETER
+        def counter(positional, keyword):
+            assert positional is sentinel.POSITIONAL_ARGUMENT
+            assert keyword is sentinel.KEYWORD_ARGUMENT
             result = yield
             assert result is sentinel.METHOD_RESULT
             counter.calls += 1
@@ -76,9 +77,11 @@ class TestIntercept(TestCase):
 
         intercept(ex, 'method', counter)
         expect(counter.calls).to == 0
-        assert ex.method(sentinel.METHOD_PARAMETER) is sentinel.METHOD_RESULT
+        assert ex.method(sentinel.POSITIONAL_ARGUMENT,
+            keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
         expect(counter.calls).to == 1
 
         ex.method.unwrap()
-        assert ex.method(sentinel.METHOD_PARAMETER) is sentinel.METHOD_RESULT
+        assert ex.method(sentinel.POSITIONAL_ARGUMENT,
+            keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
         expect(counter.calls).to == 1
