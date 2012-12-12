@@ -51,7 +51,7 @@ def intercept(obj, methodname, wrapper):
     original = getattr(obj, methodname)
 
     def replacement(*args, **kwargs):
-        wrapfn = wrapper()
+        wrapfn = wrapper(*args, **kwargs)
         wrapfn.send(None)
         result = original(*args, **kwargs)
         try:
