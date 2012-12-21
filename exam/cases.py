@@ -3,6 +3,16 @@ from __future__ import absolute_import
 from exam.decorators import before, after, around, patcher  # NOQA
 from exam.objects import noop  # NOQA
 
+import inspect
+
+
+def unique(iterable):
+    seen = set()
+    for value in iterable:
+        if value not in seen:
+            seen.add(value)
+            yield value
+
 
 class MultipleGeneratorsContextManager(object):
 
@@ -30,10 +40,19 @@ class Exam(object):
             self.addCleanup(patch_object.stop)
 
     def attrs_of_type(self, kind):
-        for attr in dir(type(self)):
-            value = getattr(type(self), attr, False)
-            if type(value) is kind:
-                yield attr, value
+        for base in reversed(inspect.getmro(type(self))):
+            for attr, class_value in vars(base).iteritems():
+                resolved_value = getattr(type(self), attr, False)
+
+                # If the attribute inside of this base is not the exact same
+                # value as the one in type(self), that means that it's been
+                # overwritten somewhere down the line and we shall skip it
+                if class_value is not resolved_value:
+                    continue
+                elif type(resolved_value) is not kind:
+                    continue
+                else:
+                    yield attr, resolved_value
 
     def setUp(self):
         getattr(super(Exam, self), 'setUp', noop)()

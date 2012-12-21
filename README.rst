@@ -98,12 +98,50 @@ The ``@before`` decorator adds the method to the list of methods which are run a
             mydb.reset()
 
 
-``@before`` also hooks works through subclasses - that is to say, if a parent class has a ``@before`` hook in it, and you subclass it and define a 2nd ``@before`` hook in it, both ``@before`` hooks will be called.  Exam runs the child class's ``@before`` hook first, then runs the parents'.
+``@before`` also hooks works through subclasses - that is to say, if a parent class has a ``@before`` hook in it, and you subclass it and define a 2nd ``@before`` hook in it, both ``@before`` hooks will be called.  Exam runs the parent's ``@before`` hook first, then runs the childs'.  Also, if your override a `@before` hook in your child class, the overriden method is run when the rest of the child classes `@before` hooks are run.
+
+For example, with hooks defined as such:
+
+.. code:: python
+
+    from exam.decorators import before
+    from exam.cases import Exam
+
+    class MyTest(Exam, TestCase):
+
+        @before
+        def reset_database(self):
+            print 'parent reset_db'
+
+        @before
+        def parent_hook(self):
+            print 'parent hook'
+
+
+    class RedisTest(MyTest):
+
+        @before
+        def reset_database(self):
+            print 'child reset_db'
+
+        @before
+        def child_hook(self):
+            print 'child hook'
+
+When Exam runs these hooks, the output would be:
+
+.. code:: python
+
+    "prent hook"
+    "child reset_db"
+    "child hook"
+
+As you can see even though the parent class defines a ``reset_database``, because the child class overwrote it, the child's version is run intead, and also at the same time as the rest of the child's ``@before`` hooks.
 
 ``exam.decorators.after``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The compliment to ``@before``, ``@after`` adds the method to the list of methods which are run as part of the class's ``tearDown()`` routine. Like ``@before``, ``@after`` runs child class ``@after`` hooks before running their parents'
+The compliment to ``@before``, ``@after`` adds the method to the list of methods which are run as part of the class's ``tearDown()`` routine. Like ``@before``, ``@after`` runs parent class ``@after`` hooks before running ones defined in child classes.
 
 .. code:: python
 

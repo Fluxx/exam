@@ -43,12 +43,20 @@ class MyTestCase(Exam, SimpleTestCase):
         super(MyTestCase, self).__init__()
 
     @before
+    def append_wine(self):
+        self.calls.append('merlot')
+
+    @before
     def append_self(self):
         self.calls.append(type(self))
 
     @after
     def append_number(self):
         self.calls.append('2 in parent class')
+
+    @after
+    def append_person(self):
+        self.calls.append('jeff')
 
     @around
     def fairy_tail(self):
@@ -112,12 +120,12 @@ class TestExam(Exam, TestCase):
     def test_before_adds_each_method_to_set_up(self):
         expect(self.case.calls).to == []
         self.case.setUp()
-        expect(self.case.calls).to == [MyTestCase]
+        expect(self.case.calls).to == [MyTestCase, 'merlot']
 
     def test_after_adds_each_method_to_tear_down(self):
         expect(self.case.calls).to == []
         self.case.tearDown()
-        expect(self.case.calls).to == ['2 in parent class']
+        expect(self.case.calls).to == ['jeff', '2 in parent class']
 
     def test_around_calls_methods_before_and_after_run(self):
         expect(self.case.calls).to == []
@@ -128,12 +136,12 @@ class TestExam(Exam, TestCase):
     def test_before_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.setUp()
-        expect(self.subclassed_case.calls).to == ['chedder', ExtendedTestCase]
+        expect(self.subclassed_case.calls).to == ['merlot', 'chedder', ExtendedTestCase]
 
     def test_after_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.tearDown()
-        expect(self.subclassed_case.calls).to == ['salami', 'two in subclass']
+        expect(self.subclassed_case.calls).to == ['jeff', 'salami', 'two in subclass']
 
     def test_around_works_with_subclasses(self):
         expect(self.subclassed_case.calls).to == []
