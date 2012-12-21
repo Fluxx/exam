@@ -29,6 +29,13 @@ class Dummy(object):
     inline_from_method = fixture(Outer.meth)
 
 
+class ExtendedDummy(Dummy):
+
+    @fixture
+    def number(self):
+        return 42 + 42
+
+
 class TestFixture(TestCase):
 
     def test_converts_method_to_property(self):
@@ -53,3 +60,7 @@ class TestFixture(TestCase):
 
     def test_if_passed_type_builds_new_object(self):
         expect(Dummy().inline).to == 5
+
+    def test_override_in_subclass_overrides_value(self):
+        expect(ExtendedDummy().number).to == 42 + 42
+

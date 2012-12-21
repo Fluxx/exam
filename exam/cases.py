@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-import inspect
-
 from exam.decorators import before, after, around, patcher  # NOQA
 from exam.objects import noop  # NOQA
 
@@ -32,10 +30,10 @@ class Exam(object):
             self.addCleanup(patch_object.stop)
 
     def attrs_of_type(self, kind):
-        for base in inspect.getmro(type(self)):
-            for attr, value in vars(base).items():
-                if type(value) is kind:
-                    yield attr, value
+        for attr in dir(type(self)):
+            value = getattr(type(self), attr, False)
+            if type(value) is kind:
+                yield attr, value
 
     def setUp(self):
         getattr(super(Exam, self), 'setUp', noop)()

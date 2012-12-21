@@ -73,6 +73,14 @@ class ExtendedTestCase(MyTestCase):
         yield
         self.calls.append(8)
 
+    @before
+    def append_one(self):
+        self.calls.append('one')
+
+    @after
+    def append_two(self):
+        self.calls.append('two')
+
 
 # TODO: Make the subclass checking just be a subclass of the test case
 class TestExam(Exam, TestCase):
@@ -120,18 +128,18 @@ class TestExam(Exam, TestCase):
     def test_before_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.setUp()
-        expect(self.subclassed_case.calls).to == [3, 1]
+        expect(self.subclassed_case.calls).to == [3, 'one']
 
     def test_after_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.tearDown()
-        expect(self.subclassed_case.calls).to == [4, 2]
+        expect(self.subclassed_case.calls).to == [4, 'two']
 
     def test_around_works_with_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.run()
-        expect(self.subclassed_case.state_when_run).to == [7, 5]
-        expect(self.subclassed_case.calls).to == [7, 5, 8, 6]
+        expect(self.subclassed_case.state_when_run).to == [5, 7]
+        expect(self.subclassed_case.calls).to == [5, 7, 6, 8]
 
     def test_patcher_start_value_is_added_to_case_dict_on_setup(self):
         self.case.setUp()
