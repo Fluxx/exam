@@ -1,4 +1,4 @@
-from mock import sentinel, MagicMock
+from mock import sentinel
 from unittest2 import TestCase
 import itertools
 
@@ -30,7 +30,7 @@ class SimpleTestCase(object):
         self.cleanups.append(func)
 
 
-class DummyTest(Exam, SimpleTestCase):
+class MyTestCase(Exam, SimpleTestCase):
 
     @patcher('tests.dummy.thing')
     def dummy_thing(self):
@@ -40,7 +40,7 @@ class DummyTest(Exam, SimpleTestCase):
 
     def __init__(self):
         self.calls = []
-        super(DummyTest, self).__init__()
+        super(MyTestCase, self).__init__()
 
     @before
     def append_one(self):
@@ -57,7 +57,7 @@ class DummyTest(Exam, SimpleTestCase):
         self.calls.append(6)
 
 
-class ExtendedDummy(DummyTest):
+class ExtendedTestCase(MyTestCase):
 
     @before
     def append_3(self):
@@ -79,15 +79,15 @@ class TestExam(Exam, TestCase):
 
     @fixture
     def case(self):
-        return DummyTest()
+        return MyTestCase()
 
     @fixture
-    def subclass_case(self):
-        return ExtendedDummy()
+    def subclassed_case(self):
+        return ExtendedTestCase()
 
     @after
     def stop_patchers(self):
-        cleanups = (self.case.cleanups, self.subclass_case.cleanups)
+        cleanups = (self.case.cleanups, self.subclassed_case.cleanups)
 
         for cleanup in itertools.chain(*cleanups):
             if hasattr(cleanup.im_self, 'is_local'):  # Is the mock started?
@@ -118,20 +118,20 @@ class TestExam(Exam, TestCase):
         expect(self.case.calls).to == [5, 6]
 
     def test_before_works_on_subclasses(self):
-        expect(self.subclass_case.calls).to == []
-        self.subclass_case.setUp()
-        expect(self.subclass_case.calls).to == [3, 1]
+        expect(self.subclassed_case.calls).to == []
+        self.subclassed_case.setUp()
+        expect(self.subclassed_case.calls).to == [3, 1]
 
     def test_after_works_on_subclasses(self):
-        expect(self.subclass_case.calls).to == []
-        self.subclass_case.tearDown()
-        expect(self.subclass_case.calls).to == [4, 2]
+        expect(self.subclassed_case.calls).to == []
+        self.subclassed_case.tearDown()
+        expect(self.subclassed_case.calls).to == [4, 2]
 
     def test_around_works_with_subclasses(self):
-        expect(self.subclass_case.calls).to == []
-        self.subclass_case.run()
-        expect(self.subclass_case.state_when_run).to == [7, 5]
-        expect(self.subclass_case.calls).to == [7, 5, 8, 6]
+        expect(self.subclassed_case.calls).to == []
+        self.subclassed_case.run()
+        expect(self.subclassed_case.state_when_run).to == [7, 5]
+        expect(self.subclassed_case.calls).to == [7, 5, 8, 6]
 
     def test_patcher_start_value_is_added_to_case_dict_on_setup(self):
         self.case.setUp()
@@ -146,9 +146,9 @@ class TestExam(Exam, TestCase):
 
     def test_patcher_lifecycle_works_on_subclasses(self):
         expect(self.other_thing).to != sentinel.mock
-        self.subclass_case.setUp()
+        self.subclassed_case.setUp()
         expect(self.other_thing).to == sentinel.mock
-        [cleanup() for cleanup in self.subclass_case.cleanups]
+        [cleanup() for cleanup in self.subclassed_case.cleanups]
         expect(self.other_thing).to != sentinel.mock
 
     def test_patcher_patches_with_a_magic_mock_if_no_function_decorated(self):
