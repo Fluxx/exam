@@ -23,7 +23,7 @@ class MultipleGeneratorsContextManager(object):
         [g.next() for g in self.generators]
 
     def __exit__(self, *args, **kwargs):
-        for generator in self.generators:
+        for generator in reversed(self.generators):
             try:
                 generator.next()
             except StopIteration:

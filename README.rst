@@ -154,6 +154,28 @@ The compliment to ``@before``, ``@after`` adds the method to the list of methods
         def remove_temp_files(self):
             myapp.remove_temp_files()
 
+
+``exam.decorators.around``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Methods decorated with ``@around`` act as a conxtext manager around each test method.  In your around method, you're responsible for calling ``yield`` where you want the test case to run:
+
+.. code:: python
+
+    from exam.decorators import around
+    from exam.cases import Exam
+
+    class MyTest(Exam, TestCase):
+
+        @around
+        def run_in_transaction(self):
+            db.begin_transaction()
+            yield  # Run the test
+            db.rollback_transaction()
+
+``@around`` also follows the same parent/child ordering rules as ``@before`` and ``@after``, so parent ``@arounds`` will run (up until the ``yield`` statmement), then child ``@around``s will run.  After the test method has finished, however, the rest of the child's ``@around`` will run, and then the parents's.  This is done to preserve the normal behavior of nesting with context managers.
+
+
 ``exam.decorators.patcher``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

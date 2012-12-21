@@ -79,7 +79,7 @@ class ExtendedTestCase(MyTestCase):
     def movies(self):
         self.calls.append('turner')
         yield
-        self.calls.append('hooch')
+        self.calls.append('hootch')
 
     @before
     def append_self(self):
@@ -147,7 +147,7 @@ class TestExam(Exam, TestCase):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.run()
         expect(self.subclassed_case.state_when_run).to == ['hansel', 'turner']
-        expect(self.subclassed_case.calls).to == ['hansel', 'turner', 'gretle', 'hooch']
+        expect(self.subclassed_case.calls).to == ['hansel', 'turner', 'hootch', 'gretle']
 
     def test_patcher_start_value_is_added_to_case_dict_on_setup(self):
         self.case.setUp()
