@@ -43,43 +43,43 @@ class MyTestCase(Exam, SimpleTestCase):
         super(MyTestCase, self).__init__()
 
     @before
-    def append_one(self):
-        self.calls.append(1)
+    def append_self(self):
+        self.calls.append(type(self))
 
     @after
-    def append_two(self):
-        self.calls.append(2)
+    def append_number(self):
+        self.calls.append('2 in parent class')
 
     @around
-    def append_5_then_6(self):
-        self.calls.append(5)
+    def fairy_tail(self):
+        self.calls.append('hansel')
         yield
-        self.calls.append(6)
+        self.calls.append('gretle')
 
 
 class ExtendedTestCase(MyTestCase):
 
     @before
-    def append_3(self):
-        self.calls.append(3)
+    def append_cheese(self):
+        self.calls.append('chedder')
 
     @after
-    def append_4(self):
-        self.calls.append(4)
+    def append_meat(self):
+        self.calls.append('salami')
 
     @around
-    def append_7_then_8(self):
-        self.calls.append(7)
+    def movies(self):
+        self.calls.append('turner')
         yield
-        self.calls.append(8)
+        self.calls.append('hooch')
 
     @before
-    def append_one(self):
-        self.calls.append('one')
+    def append_self(self):
+        self.calls.append(type(self))
 
     @after
-    def append_two(self):
-        self.calls.append('two')
+    def append_number(self):
+        self.calls.append('two in subclass')
 
 
 # TODO: Make the subclass checking just be a subclass of the test case
@@ -112,34 +112,34 @@ class TestExam(Exam, TestCase):
     def test_before_adds_each_method_to_set_up(self):
         expect(self.case.calls).to == []
         self.case.setUp()
-        expect(self.case.calls).to == [1]
+        expect(self.case.calls).to == [MyTestCase]
 
     def test_after_adds_each_method_to_tear_down(self):
         expect(self.case.calls).to == []
         self.case.tearDown()
-        expect(self.case.calls).to == [2]
+        expect(self.case.calls).to == ['2 in parent class']
 
     def test_around_calls_methods_before_and_after_run(self):
         expect(self.case.calls).to == []
         self.case.run()
-        expect(self.case.state_when_run).to == [5]
-        expect(self.case.calls).to == [5, 6]
+        expect(self.case.state_when_run).to == ['hansel']
+        expect(self.case.calls).to == ['hansel', 'gretle']
 
     def test_before_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.setUp()
-        expect(self.subclassed_case.calls).to == [3, 'one']
+        expect(self.subclassed_case.calls).to == ['chedder', ExtendedTestCase]
 
     def test_after_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.tearDown()
-        expect(self.subclassed_case.calls).to == [4, 'two']
+        expect(self.subclassed_case.calls).to == ['salami', 'two in subclass']
 
     def test_around_works_with_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.run()
-        expect(self.subclassed_case.state_when_run).to == [5, 7]
-        expect(self.subclassed_case.calls).to == [5, 7, 6, 8]
+        expect(self.subclassed_case.state_when_run).to == ['hansel', 'turner']
+        expect(self.subclassed_case.calls).to == ['hansel', 'turner', 'gretle', 'hooch']
 
     def test_patcher_start_value_is_added_to_case_dict_on_setup(self):
         self.case.setUp()
