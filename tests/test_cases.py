@@ -136,7 +136,12 @@ class TestExam(Exam, TestCase):
     def test_before_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
         self.subclassed_case.setUp()
-        expect(self.subclassed_case.calls).to == ['merlot', 'chedder', ExtendedTestCase]
+
+        # The only concern with ordering here is that the parent class's @before
+        # hook fired before it's parents.  The actual order of the @before hooks
+        # within a level of class is irrelevant.
+        expect(self.subclassed_case.calls[0]).to == 'merlot'
+        expect(sorted(self.subclassed_case.calls[1:])).to == ['chedder', ExtendedTestCase]
 
     def test_after_works_on_subclasses(self):
         expect(self.subclassed_case.calls).to == []
