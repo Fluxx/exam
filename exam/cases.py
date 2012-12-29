@@ -46,18 +46,10 @@ class Exam(object):
 
                 if type(resolved_value) is not kind:
                     continue
-
-                # if attr == 'append_self':
-                #     print base
-                #     print 'class', class_value
-                #     print 'resolved', resolved_value
-                #     print class_value is resolved_value
-                #     print '-' * 80
-
                 # If the attribute inside of this base is not the exact same
                 # value as the one in type(self), that means that it's been
                 # overwritten somewhere down the line and we shall skip it
-                if class_value is not resolved_value:
+                elif class_value is not resolved_value:
                     continue
                 else:
                     print 'yielding', attr, 'from', base
