@@ -1,3 +1,6 @@
+.. image:: https://api.travis-ci.org/Fluxx/exam.png?branch=master
+   :target: http://travis-ci.org/fluxx/exam
+
 ####
 Exam
 ####
