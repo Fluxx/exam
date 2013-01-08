@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from exam.decorators import before, after, around, patcher  # NOQA
 from exam.objects import noop  # NOQA
+from exam.asserts import AssertsMixin
 
 import inspect
 
@@ -30,7 +31,7 @@ class MultipleGeneratorsContextManager(object):
                 pass
 
 
-class Exam(object):
+class Exam(AssertsMixin):
 
     @before
     def setup_patchers(self):
