@@ -56,6 +56,14 @@ class TestMockImport(TestCase):
         import foo
         expect(foo).to == mock_foo
 
+    @mock_import('foo')
+    @mock_import('bar')
+    def test_stacked_adds_args_bottom_up(self, mock_bar, mock_foo):
+        import foo
+        import bar
+        expect(mock_bar).to == bar
+        expect(mock_foo).to == foo
+
 
 class TestIntercept(TestCase):
 
