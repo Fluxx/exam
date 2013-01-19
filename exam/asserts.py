@@ -31,7 +31,7 @@ class ChangeWatcher(object):
 
     @property
     def __equality_failure_message(self):
-        return 'Expected before %s != %s after' % (self.before, self.after)
+        return 'Expected before %r != %r after' % (self.before, self.after)
 
     def __precondition_failure_msg_for(self, condition):
         return '%s value did not change (%s)' % (
