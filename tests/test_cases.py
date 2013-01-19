@@ -117,6 +117,10 @@ class TestExam(Exam, TestCase):
     def other_it(self):
         return get_it()
 
+    def test_assert_changes_is_asserts_mixin_assert_changes(self):
+        from exam.asserts import AssertsMixin
+        expect(AssertsMixin.assertChanges, Exam.assertChanges)
+
     def test_before_adds_each_method_to_set_up(self):
         expect(self.case.calls).to == []
         self.case.setUp()
