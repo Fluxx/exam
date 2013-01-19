@@ -1,4 +1,4 @@
-irrelevant = object()
+IRRELEVANT = object()
 
 
 class ChangeWatcher(object):
@@ -7,20 +7,20 @@ class ChangeWatcher(object):
         self.thing = thing
         self.args = args
         self.kwargs = kwargs
-        self.expected_before = kwargs.pop('before', irrelevant)
-        self.expected_after = kwargs.pop('after', irrelevant)
+        self.expected_before = kwargs.pop('before', IRRELEVANT)
+        self.expected_after = kwargs.pop('after', IRRELEVANT)
 
     def __enter__(self):
         self.before = self.__apply()
 
-        if not self.expected_before is irrelevant:
+        if not self.expected_before is IRRELEVANT:
             check = self.before == self.expected_before
             assert check, self.__precondition_failure_msg_for('before')
 
     def __exit__(self, type, value, traceback):
         self.after = self.__apply()
 
-        if not self.expected_after is irrelevant:
+        if not self.expected_after is IRRELEVANT:
             check = self.after == self.expected_after
             assert check, self.__precondition_failure_msg_for('after')
 
