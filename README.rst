@@ -336,32 +336,32 @@ To properly test this, you should save that soldier's rank to a temporary variab
         self.assertEaual(self.soldier.rank, 'general')
         self.assertNotEqual(self.soldier.rank, old_rank)
 
-Checking the old rank is not the same is the new rank is important.  If, for some reason there is a bug or something to where `self.soldier` is created with the rank of `general`, but `promote` is not working, this test would still pass!
+Checking the old rank is not the same is the new rank is important.  If, for some reason there is a bug or something to where ``self.soldier`` is created with the rank of ``general``, but ``promote`` is not working, this test would still pass!
 
-To solve this, you can use Exam's `assertChanges`:
+To solve this, you can use Exam's ``assertChanges``:
 
 .. code:: python
 
-    test_changes_rank(self):
+    def test_changes_rank(self):
         self.assertChanges(getattr, self.soldier, 'rank', after='general'):
             promote(self.soldier, 'general')
 
 This assert is doing a few things.
 
-1. It asserts that the rank once the cotext is run is the expected `general`.
-2. It asserts that the context **changes** the value of `self.soldier.rank`.
-3. It doesn't actually care what the old value of `self.soldier.rank` was, as long as it changed when the context was run.
+1. It asserts that the rank once the cotext is run is the expected ``general``.
+2. It asserts that the context **changes** the value of ``self.soldier.rank``.
+3. It doesn't actually care what the old value of ``self.soldier.rank`` was, as long as it changed when the context was run.
 
-The definition of `assertChanges` is:
+The definition of ``assertChanges`` is:
 
 .. code:: python
     def assertChanges(thing, *args, **kwargs)
 
-1. You pass it a `thing`, which wich be a callable.
-2. `assertChanges` then calls your `thing` with any `*args` and `**kwargs` additionally passed in and captures the value as the "before" value.
+1. You pass it a ``thing``, which wich be a callable.
+2. ``assertChanges`` then calls your ``thing`` with any ``*args`` and ``**kwargs`` additionally passed in and captures the value as the "before" value.
 3. The context is run, and then the callable is captured again as the "after" value.
-4. If before and after are not different, an `AssertionError` is raised.
-5. Additionally, if the special kwarg `before` or `after` are passed, those values are extracted and saved.  In this case an `AssertionError` can also be raised if the "before" and/or "after" values provided do not match their extracted values.
+4. If before and after are not different, an ``AssertionError`` is raised.
+5. Additionally, if the special kwarg ``before`` or ``after`` are passed, those values are extracted and saved.  In this case an ``AssertionError`` can also be raised if the "before" and/or "after" values provided do not match their extracted values.
 
 License
 -------
