@@ -110,7 +110,6 @@ class mock_import(patch.dict):
             args.insert(1, self.modules[self.path])
 
             with self:
-                print func, args, kwargs
                 func(*args, **kwargs)
 
         return inner

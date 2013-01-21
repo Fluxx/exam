@@ -53,7 +53,6 @@ class Exam(AssertsMixin):
                 elif class_value is not resolved_value:
                     continue
                 else:
-                    print 'yielding', attr, 'from', base
                     yield attr, resolved_value
 
     def setUp(self):
