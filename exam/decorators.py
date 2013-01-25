@@ -12,18 +12,27 @@ class fixture(object):
         self.args = args
         self.kwargs = kwargs
 
-    def __get__(self, instance, type=None):
-        if not self.thing in instance.__dict__:
-            applied = self.__apply(instance)(*self.args, **self.kwargs)
-            instance.__dict__[self.thing] = applied
+    def __get__(self, testcase, type=None):
+        if not self in testcase.__dict__:
+            # If this fixture is not present in the test case's __dict__,
+            # freshly apply this fixture and store that in the dict, keyed by
+            # self
+            application = self.__apply(testcase)(*self.args, **self.kwargs)
+            testcase.__dict__[self] = application
 
-        return instance.__dict__[self.thing]
+        return testcase.__dict__[self]
 
-    def __apply(self, instance):
+    def __apply(self, testcase):
+        # If self.thing is a method type, it means that the function is already
+        # bound to a class and therefore we should treat it just like a normal
+        # functuion and return it.
         if type(self.thing) in (type, types.MethodType):
             return self.thing
+        # If not, it means that's it's a vanilla function, so either a decorated
+        # instance method in the test case body or a lambda.  In either of those
+        # cases, it's called with the test case instance (self) to the author.
         else:
-            return partial(self.thing, instance)
+            return partial(self.thing, testcase)
 
 
 class base(object):

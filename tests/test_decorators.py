@@ -10,6 +10,10 @@ class Outer(object):
     def meth(cls):
         return cls, 'from method'
 
+    @classmethod
+    def reflective_meth(cls, arg):
+        return cls, arg
+
 
 class Dummy(object):
 
@@ -27,6 +31,9 @@ class Dummy(object):
     inline_func = fixture(lambda self: self.outside)
     inline_func_with_args = fixture(lambda *a, **k: (a, k), 1, 2, a=3)
     inline_from_method = fixture(Outer.meth)
+
+    inline_from_method_with_arg_1 = fixture(Outer.reflective_meth, 1)
+    inline_from_method_with_arg_2 = fixture(Outer.reflective_meth, 2)
 
 
 class ExtendedDummy(Dummy):
@@ -64,3 +71,10 @@ class TestFixture(TestCase):
     def test_override_in_subclass_overrides_value(self):
         expect(ExtendedDummy().number).to == 42 + 42
 
+    def test_captures_identical_funcs_with_args_separatly(self):
+        instance = Dummy()
+
+        first = instance.inline_from_method_with_arg_1
+        second = instance.inline_from_method_with_arg_2
+
+        expect(first).to != second
