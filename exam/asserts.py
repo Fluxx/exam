@@ -17,7 +17,7 @@ class ChangeWatcher(object):
             check = self.before == self.expected_before
             assert check, self.__precondition_failure_msg_for('before')
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exec_type, exac_value, traceback):
         self.after = self.__apply()
 
         if not self.expected_after is IRRELEVANT:
