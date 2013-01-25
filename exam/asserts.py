@@ -19,7 +19,7 @@ class ChangeWatcher(object):
 
     def __exit__(self, exec_type, exec_value, traceback):
         if exec_type is not None:
-            raise
+            return False  # reraises original exception
 
         self.after = self.__apply()
 
