@@ -41,3 +41,9 @@ class AssertChangesMixin(Exam, TestCase):
 
         with expect.to_raise_error(AssertionError):
             self.no_op_context()
+
+    def test_reraises_exception_if_raised_in_context(self):
+        with self.assertRaises(NameError):
+            with self.case.assertChanges(len, self.thing, after=5):
+                self.thing.append(1)
+                undefined_name
