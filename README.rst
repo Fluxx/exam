@@ -293,7 +293,7 @@ Helper class that is itself callable, whose return values when called are config
     >>> side_effect(2)
     'with 2'
 
-Call argument equality is checked via equality (==) of the ``call``` object, which is the 0th item of the configuration tuple passed in to the ``effect`` constructor.  By default, ``call`` objects are just themselves ``tuple``s, and will use their default equality checking.
+Call argument equality is checked via equality (==) of the ``call``` object, which is the 0th item of the configuration tuple passed in to the ``effect`` constructor.  By default, ``call`` objects are just ``mock.call`` objects.
 
 If you would like to customize this behavior, subclass `effect` and redefine your own `call_class` class variable.  I.e.
 

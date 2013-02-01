@@ -4,7 +4,7 @@ import shutil
 import os
 import functools
 
-from mock import MagicMock, patch
+from mock import MagicMock, patch, call
 
 
 def rm_f(path):
@@ -115,21 +115,6 @@ class mock_import(patch.dict):
         return inner
 
 
-class call(tuple):
-    """
-    Stores args and kwargs it was constructed with, and compares equal to other
-    call objects that were called with the same (using equality, ==) arguments.
-
-    >>> from exam.objects import call
-    >>> call(1, 2, b=[3]) == call(1, 2, b=[3])
-    True
-    """
-
-    def __new__(cls, *args, **kwargs):
-        arguments = (args, tuple(sorted(kwargs.items())))
-        return tuple.__new__(cls, arguments)
-
-
 class effect(list):
     """
     Helper class that is itself callable, whose return values when called are
@@ -146,8 +131,7 @@ class effect(list):
 
     Call argument equality is checked via equality (==) of the ``call``` object,
     which is the 0th item of the configuration tuple passed in to the ``effect``
-    constructor.  By default, ``call`` objects are just themselves ``tuple``s,
-    and will use their default equality checking.
+    constructor.  By default, ``call`` objects are just ``mock.call`` objects.
 
     If you would like to customize this behavior, subclass `effect` and redefine
     your own `call_class` class variable.  I.e.

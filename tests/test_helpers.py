@@ -95,18 +95,6 @@ class TestIntercept(TestCase):
         expect(counter.calls).to == 1
 
 
-class TestCall(TestCase):
-
-    def test_records_and_checks_equality_on_calls(self):
-        expect(call(1)).to == call(1)
-        expect(call(1)).to != call(2)
-        expect(call(1, 2)).to == call(1, 2)
-        expect(call(1, 2, a=5)).to == call(1, 2, a=5)
-
-    def test_works_with_mutable_types(self):
-        expect(call([1])).to == call([1])
-
-
 class TestEffect(TestCase):
 
     def test_creates_callable_mapped_to_config_dict(self):
