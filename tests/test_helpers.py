@@ -1,7 +1,7 @@
 from unittest2 import TestCase
 from mock import patch, Mock, sentinel
 
-from exam.helpers import intercept, rm_f, track, mock_import
+from exam.helpers import intercept, rm_f, track, mock_import, call, effect
 from exam.decorators import fixture
 
 from describe import expect
@@ -93,3 +93,40 @@ class TestIntercept(TestCase):
         assert ex.method(sentinel.POSITIONAL_ARGUMENT,
             keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
         expect(counter.calls).to == 1
+
+
+class TestCall(TestCase):
+
+    def test_records_and_checks_equality_on_calls(self):
+        expect(call(1)).to == call(1)
+        expect(call(1)).to != call(2)
+        expect(call(1, 2)).to == call(1, 2)
+        expect(call(1, 2, a=5)).to == call(1, 2, a=5)
+
+    def test_works_with_mutable_types(self):
+        expect(call([1])).to == call([1])
+
+
+class TestEffect(TestCase):
+
+    def test_creates_callable_mapped_to_config_dict(self):
+        config = [
+            (call(1), 2),
+            (call('a'), 3),
+            (call(1, b=2), 4),
+            (call(c=3), 5)
+        ]
+        side_effecet = effect(*config)
+
+        expect(side_effecet(1)).to == 2
+        expect(side_effecet('a')).to == 3
+        expect(side_effecet(1, b=2)).to == 4
+        expect(side_effecet(c=3)).to == 5
+
+    def test_raises_type_error_when_called_with_unknown_args(self):
+        side_effect = effect((call(1), 5))
+        self.assertRaises(TypeError, side_effect, 'junk')
+
+    def test_can_be_used_with_mutable_data_structs(self):
+        side_effect = effect((call([1, 2, 3]), 'list'))
+        expect(side_effect([1, 2, 3])).to == 'list'
