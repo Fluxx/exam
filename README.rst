@@ -282,6 +282,26 @@ the testing method (like a normal ``@patch``) decorator:
         import os.path as imported_os_path
         assert my_os_path is imported_os_path
 
+``exam.helpers.effect``
+
+Helper class that is itself callable, whose return values when called are configured via the tuples passed in to the constructor. Useful to build ``side_effect`` callables for Mock objects. Raises TypeError if called with arguments that it was not configured with:
+
+    >>> from exam.objects import call, effect
+    >>> side_effect = effect((call(1), 'with 1'), (call(2), 'with 2'))
+    >>> side_effect(1)
+    'with 1'
+    >>> side_effect(2)
+    'with 2'
+
+Call argument equality is checked via equality (==) of the ``call``` object, which is the 0th item of the configuration tuple passed in to the ``effect`` constructor.  By default, ``call`` objects are just themselves ``tuple``s, and will use their default equality checking.
+
+If you would like to customize this behavior, subclass `effect` and redefine your own `call_class` class variable.  I.e.
+
+.. code:: python
+
+    class myeffect(effect):
+        call_class = my_call_class
+
 ``exam.mock``
 ~~~~~~~~~~~~~
 
