@@ -145,7 +145,7 @@ class effect(list):
     def __init__(self, *calls):
         """
         :param calls: Two-item tuple containing call and the return value.
-        :type calls: :class:`efffect.call_class`
+        :type calls: :class:`effect.call_class`
         """
         super(effect, self).__init__(calls)
 
