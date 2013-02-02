@@ -156,5 +156,5 @@ class effect(list):
             if call_obj == this_call:
                 return return_value
 
-        raise TypeError('Unknown effect for: %s, %s' % (args, kwargs))
+        raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
 
