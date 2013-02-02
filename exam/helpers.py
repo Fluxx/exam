@@ -4,7 +4,7 @@ import shutil
 import os
 import functools
 
-from mock import MagicMock, patch
+from mock import MagicMock, patch, call
 
 
 def rm_f(path):
@@ -113,3 +113,48 @@ class mock_import(patch.dict):
                 func(*args, **kwargs)
 
         return inner
+
+
+class effect(list):
+    """
+    Helper class that is itself callable, whose return values when called are
+    configured via the tuples passed in to the constructor. Useful to build
+    ``side_effect`` callables for Mock objects.  Raises TypeError if called with
+    arguments that it was not configured with:
+
+    >>> from exam.objects import call, effect
+    >>> side_effect = effect((call(1), 'with 1'), (call(2), 'with 2'))
+    >>> side_effect(1)
+    'with 1'
+    >>> side_effect(2)
+    'with 2'
+
+    Call argument equality is checked via equality (==) of the ``call``` object,
+    which is the 0th item of the configuration tuple passed in to the ``effect``
+    constructor.  By default, ``call`` objects are just ``mock.call`` objects.
+
+    If you would like to customize this behavior, subclass `effect` and redefine
+    your own `call_class` class variable.  I.e.
+
+        class myeffect(effect):
+            call_class = my_call_class
+    """
+
+    call_class = call
+
+    def __init__(self, *calls):
+        """
+        :param calls: Two-item tuple containing call and the return value.
+        :type calls: :class:`effect.call_class`
+        """
+        super(effect, self).__init__(calls)
+
+    def __call__(self, *args, **kwargs):
+        this_call = self.call_class(*args, **kwargs)
+
+        for call_obj, return_value in self:
+            if call_obj == this_call:
+                return return_value
+
+        raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
+
