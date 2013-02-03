@@ -283,6 +283,7 @@ the testing method (like a normal ``@patch``) decorator:
         assert my_os_path is imported_os_path
 
 ``exam.helpers.effect``
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Helper class that is itself callable, whose return values when called are configured via the tuples passed in to the constructor. Useful to build ``side_effect`` callables for Mock objects. Raises TypeError if called with arguments that it was not configured with:
 
