@@ -7,6 +7,10 @@ IRRELEVANT = object()
 
 class ChangeWatcher(object):
 
+    #: Used in the equality failure message during exit of the contexdt manager
+    #: to explain why the at ext check failed.
+    EQUALITY_FAILURE_SIGN = {eq: '!=', ne: '=='}
+
     def __init__(self, compare, thing, *args, **kwargs):
         self.thing = thing
         self.compare = compare
@@ -42,7 +46,11 @@ class ChangeWatcher(object):
 
     @property
     def __equality_failure_message(self):
-        return 'Expected before %r != %r after' % (self.before, self.after)
+        return 'Expected before %r %s %r after' % (
+            self.before,
+            self.EQUALITY_FAILURE_SIGN[self.compare],
+            self.after
+        )
 
     def __precondition_failure_msg_for(self, condition):
         return '%s value did not change (%s)' % (

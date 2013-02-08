@@ -53,6 +53,6 @@ class AssertChangesMixin(Exam, TestCase):
             pass
 
     def test_raises_assertion_error_if_value_changes(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaisesRegexp(AssertionError, '=='):
             with self.assertDoesNotChange(len, self.thing):
                 self.thing.append(1)
