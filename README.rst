@@ -342,7 +342,7 @@ Useful objectgs for use in testing:
 The `asserts` module contains an `AssertsMixin` class, which is mixed into the main `Exam` test case mixin.  It contains additional asserts beoynd the ones in Python's `unittest`.
 
 ``assertChanges``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 Used when you want to assert that a section of code changes a value.  For example, imagine if you had a function that changed a soldier's rank.
 
@@ -382,6 +382,19 @@ The definition of ``assertChanges`` is:
 3. The context is run, and then the callable is captured again as the "after" value.
 4. If before and after are not different, an ``AssertionError`` is raised.
 5. Additionally, if the special kwarg ``before`` or ``after`` are passed, those values are extracted and saved.  In this case an ``AssertionError`` can also be raised if the "before" and/or "after" values provided do not match their extracted values.
+
+``assertDoesNotChange``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Similar to ``assertChanges``, ``assertDoesNotChange`` asserts that the code inside the context does not change the value from the callable:
+
+.. code:: python
+
+    def test_does_not_change_rank(self):
+        self.assertDoesNoteChange(getattr, self.soldier, 'rank'):
+            self.soldier.march()
+
+Unlike ``assertChanges``, ``assertDoesNotChange`` does not take ``before`` or ``after`` kwargs.  It simply asserts that the value of the callable did not chage when the context was run.
 
 License
 -------
