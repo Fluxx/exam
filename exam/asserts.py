@@ -53,3 +53,9 @@ class ChangeWatcher(object):
 
 class AssertsMixin(object):
     assertChanges = partial(ChangeWatcher, eq)
+    assertDoesNotChange = partial(
+        ChangeWatcher,
+        ne,
+        before=IRRELEVANT,
+        after=IRRELEVANT
+    )

@@ -47,3 +47,12 @@ class AssertChangesMixin(Exam, TestCase):
             with self.case.assertChanges(len, self.thing, after=5):
                 self.thing.append(1)
                 undefined_name
+
+    def test_does_not_change_passes_if_no_change_was_made(self):
+        with self.assertDoesNotChange(len, self.thing):
+            pass
+
+    def test_raises_assertion_error_if_value_changes(self):
+        with self.assertRaises(AssertionError):
+            with self.assertDoesNotChange(len, self.thing):
+                self.thing.append(1)
