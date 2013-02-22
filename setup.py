@@ -22,7 +22,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='exam',
-    version='0.7.0',
+    version='0.8.0',
     author='Jeff Pollard',
     author_email='jeff.pollard@gmail.com',
     url='https://github.com/fluxx/exam',
