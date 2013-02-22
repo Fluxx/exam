@@ -34,13 +34,13 @@ class MultipleGeneratorsContextManager(object):
 class Exam(AssertsMixin):
 
     @before
-    def setup_patchers(self):
-        for attr, patchr in self.attrs_of_type(patcher):
+    def __setup_patchers(self):
+        for attr, patchr in self.__attrs_of_type(patcher):
             patch_object = patchr.build_patch(self)
             setattr(self, attr, patch_object.start())
             self.addCleanup(patch_object.stop)
 
-    def attrs_of_type(self, kind):
+    def __attrs_of_type(self, kind):
         for base in reversed(inspect.getmro(type(self))):
             for attr, class_value in vars(base).iteritems():
                 resolved_value = getattr(type(self), attr, False)
@@ -55,17 +55,17 @@ class Exam(AssertsMixin):
                 else:
                     yield attr, resolved_value
 
-    def run_before_hooks(self):
-        for _, value in self.attrs_of_type(before):
+    def __run_before_hooks(self):
+        for _, value in self.__attrs_of_type(before):
             value(self)
 
-    def run_after_hooks(self):
-        for _, value in self.attrs_of_type(after):
+    def __run_after_hooks(self):
+        for _, value in self.__attrs_of_type(after):
             value(self)
 
     def run(self, *args, **kwargs):
-        generators = (value(self) for _, value in self.attrs_of_type(around))
+        generators = (value(self) for _, value in self.__attrs_of_type(around))
         with MultipleGeneratorsContextManager(*generators):
-            self.run_before_hooks()
+            self.__run_before_hooks()
             getattr(super(Exam, self), 'run', noop)(*args, **kwargs)
-            self.run_after_hooks()
+            self.__run_after_hooks()
