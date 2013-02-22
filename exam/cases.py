@@ -55,19 +55,17 @@ class Exam(AssertsMixin):
                 else:
                     yield attr, resolved_value
 
-    def setUp(self):
-        getattr(super(Exam, self), 'setUp', noop)()
-
+    def run_before_hooks(self):
         for _, value in self.attrs_of_type(before):
             value(self)
 
-    def tearDown(self):
-        getattr(super(Exam, self), 'tearDown', noop)()
-
+    def run_after_hooks(self):
         for _, value in self.attrs_of_type(after):
             value(self)
 
     def run(self, *args, **kwargs):
         generators = (value(self) for _, value in self.attrs_of_type(around))
         with MultipleGeneratorsContextManager(*generators):
-            super(Exam, self).run(*args, **kwargs)
+            self.run_before_hooks()
+            getattr(super(Exam, self), 'run', noop)(*args, **kwargs)
+            self.run_after_hooks()
