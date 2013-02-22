@@ -43,6 +43,20 @@ class BaseTestCase(Exam, SimpleTestCase):
         self.calls = []
         super(BaseTestCase, self).__init__(*args, **kwargs)
 
+    def setUp(self):
+        """
+        Exists only to prove that adding a setUp method to a test case does not
+        break Exam.
+        """
+        pass
+
+    def tearDown(self):
+        """
+        Exists only to prove that adding a tearDown method to a test case does
+        not break Exam.
+        """
+        pass
+
 
 class CaseWithBeforeHook(BaseTestCase):
 
