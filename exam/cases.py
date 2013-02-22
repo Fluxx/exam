@@ -7,14 +7,6 @@ from exam.asserts import AssertsMixin
 import inspect
 
 
-def unique(iterable):
-    seen = set()
-    for value in iterable:
-        if value not in seen:
-            seen.add(value)
-            yield value
-
-
 class MultipleGeneratorsContextManager(object):
 
     def __init__(self, *generators):
