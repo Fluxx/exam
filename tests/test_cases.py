@@ -1,8 +1,7 @@
 from mock import sentinel
 from unittest2 import TestCase
-import itertools
 
-from exam.decorators import fixture, before, after, around, patcher
+from exam.decorators import before, after, around, patcher
 from exam.cases import Exam
 
 from describe import expect
@@ -11,6 +10,9 @@ from dummy import get_thing, get_it
 
 
 class SimpleTestCase(object):
+    """
+    Meant to act like a typical unittest.TestCase
+    """
 
     def __init__(self):
         self.cleanups = []
@@ -24,13 +26,85 @@ class SimpleTestCase(object):
         self.teardowns += 1
 
     def run(self, *args, **kwargs):
-        self.state_when_run = list(self.calls)
+        # At this point in time, exam has run its before hooks and has super'd
+        # to the TestCase (us), so, capture the state of calls
+        self.calls_before_run = list(self.calls)
+        self.vars_when_run = vars(self)
 
     def addCleanup(self, func):
         self.cleanups.append(func)
 
 
-class MyTestCase(Exam, SimpleTestCase):
+class BaseTestCase(Exam, SimpleTestCase):
+    """
+    Meant to act like a test case a typical user would have.
+    """
+    def __init__(self, *args, **kwargs):
+        self.calls = []
+        super(BaseTestCase, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+        """
+        Exists only to prove that adding a setUp method to a test case does not
+        break Exam.
+        """
+        pass
+
+    def tearDown(self):
+        """
+        Exists only to prove that adding a tearDown method to a test case does
+        not break Exam.
+        """
+        pass
+
+
+class CaseWithBeforeHook(BaseTestCase):
+
+    @before
+    def run_before(self):
+        self.calls.append('run before')
+
+
+class SubclassWithBeforeHook(CaseWithBeforeHook):
+
+    @before
+    def subclass_run_before(self):
+        self.calls.append('subclass run before')
+
+
+class CaseWithAfterHook(CaseWithBeforeHook):
+
+    @after
+    def run_after(self):
+        self.calls.append('run after')
+
+
+class SubclassCaseWithAfterHook(CaseWithAfterHook):
+
+    @after
+    def subclass_run_after(self):
+        self.calls.append('subclass run after')
+
+
+class CaseWithAroundHook(BaseTestCase):
+
+    @around
+    def run_around(self):
+        self.calls.append('run around before')
+        yield
+        self.calls.append('run around after')
+
+
+class SubclassCaseWithAroundHook(BaseTestCase):
+
+    @around
+    def subclass_run_around(self):
+        self.calls.append('subclass run around before')
+        yield
+        self.calls.append('subclass run around after')
+
+
+class CaseWithPatcher(BaseTestCase):
 
     @patcher('tests.dummy.thing')
     def dummy_thing(self):
@@ -38,157 +112,99 @@ class MyTestCase(Exam, SimpleTestCase):
 
     dummy_it = patcher('tests.dummy.it', return_value=12)
 
-    def __init__(self):
-        self.calls = []
-        super(MyTestCase, self).__init__()
 
-    @before
-    def append_wine(self):
-        self.calls.append('merlot')
-
-    @before
-    def append_self(self):
-        self.calls.append(type(self))
-
-    @after
-    def append_number(self):
-        self.calls.append('2 in parent class')
-
-    @after
-    def append_person(self):
-        self.calls.append('jeff')
-
-    @around
-    def fairy_tail(self):
-        self.calls.append('hansel')
-        yield
-        self.calls.append('gretle')
-
-
-class ExtendedTestCase(MyTestCase):
-
-    @before
-    def append_cheese(self):
-        self.calls.append('chedder')
-
-    @after
-    def append_meat(self):
-        self.calls.append('salami')
-
-    @around
-    def movies(self):
-        self.calls.append('turner')
-        yield
-        self.calls.append('hootch')
-
-    @before
-    def append_self(self):
-        self.calls.append(type(self))
-
-    @after
-    def append_number(self):
-        self.calls.append('two in subclass')
+class SubclassedCaseWithPatcher(CaseWithPatcher):
+    pass
 
 
 # TODO: Make the subclass checking just be a subclass of the test case
 class TestExam(Exam, TestCase):
 
-    @fixture
-    def case(self):
-        return MyTestCase()
-
-    @fixture
-    def subclassed_case(self):
-        return ExtendedTestCase()
-
-    @after
-    def stop_patchers(self):
-        cleanups = (self.case.cleanups, self.subclassed_case.cleanups)
-
-        for cleanup in itertools.chain(*cleanups):
-            if hasattr(cleanup.im_self, 'is_local'):  # Is the mock started?
-                cleanup()
-
-    @property
-    def other_thing(self):
-        return get_thing()
-
-    @property
-    def other_it(self):
-        return get_it()
-
     def test_assert_changes_is_asserts_mixin_assert_changes(self):
         from exam.asserts import AssertsMixin
         expect(AssertsMixin.assertChanges, Exam.assertChanges)
 
-    def test_before_adds_each_method_to_set_up(self):
-        expect(self.case.calls).to == []
-        self.case.setUp()
-        expect(self.case.calls).to == [MyTestCase, 'merlot']
+    def test_before_runs_method_before_test_case(self):
+        case = CaseWithBeforeHook()
+        expect(case.calls).to == []
+        case.run()
+        expect(case.calls_before_run).to == ['run before']
 
-    def test_after_adds_each_method_to_tear_down(self):
-        expect(self.case.calls).to == []
-        self.case.tearDown()
-        expect(self.case.calls).to == ['jeff', '2 in parent class']
+    def test_after_adds_each_method_after_test_case(self):
+        case = CaseWithAfterHook()
+        expect(case.calls).to == []
+        case.run()
+        expect(case.calls).to == ['run before', 'run after']
 
     def test_around_calls_methods_before_and_after_run(self):
-        expect(self.case.calls).to == []
-        self.case.run()
-        expect(self.case.state_when_run).to == ['hansel']
-        expect(self.case.calls).to == ['hansel', 'gretle']
+        case = CaseWithAroundHook()
+        expect(case.calls).to == []
+        case.run()
+        expect(case.calls_before_run).to == ['run around before']
+        expect(case.calls).to == ['run around before', 'run around after']
 
     def test_before_works_on_subclasses(self):
-        expect(self.subclassed_case.calls).to == []
-        self.subclassed_case.setUp()
+        case = SubclassWithBeforeHook()
+        expect(case.calls).to == []
+
+        case.run()
 
         # The only concern with ordering here is that the parent class's @before
         # hook fired before it's parents.  The actual order of the @before hooks
         # within a level of class is irrelevant.
-        expect(self.subclassed_case.calls[0]).to == 'merlot'
-        expect(sorted(self.subclassed_case.calls[1:])).to == ['chedder', ExtendedTestCase]
+        expect(case.calls).to == ['run before', 'subclass run before']
 
     def test_after_works_on_subclasses(self):
-        expect(self.subclassed_case.calls).to == []
-        self.subclassed_case.tearDown()
-        expect(self.subclassed_case.calls).to == ['jeff', 'salami', 'two in subclass']
+        case = SubclassCaseWithAfterHook()
+        expect(case.calls).to == []
+
+        case.run()
+
+        expect(case.calls_before_run).to == ['run before']
+        expect(case.calls).to == ['run before', 'run after', 'subclass run after']
 
     def test_around_works_with_subclasses(self):
-        expect(self.subclassed_case.calls).to == []
-        self.subclassed_case.run()
-        expect(self.subclassed_case.state_when_run).to == ['hansel', 'turner']
-        expect(self.subclassed_case.calls).to == ['hansel', 'turner', 'hootch', 'gretle']
+        case = SubclassCaseWithAroundHook()
+        expect(case.calls).to == []
 
-    def test_patcher_start_value_is_added_to_case_dict_on_setup(self):
-        self.case.setUp()
-        expect(self.case.dummy_thing).to == sentinel.mock
+        case.run()
+
+        expect(case.calls_before_run).to == ['subclass run around before']
+        expect(case.calls).to == ['subclass run around before', 'subclass run around after']
+
+    def test_patcher_start_value_is_added_to_case_dict_on_run(self):
+        case = CaseWithPatcher()
+        case.run()
+        expect(case.vars_when_run['dummy_thing']).to == sentinel.mock
 
     def test_patcher_patches_object_on_setup_and_adds_patcher_to_cleanup(self):
-        expect(self.other_thing).to != sentinel.mock
-        self.case.setUp()
-        expect(self.other_thing).to == sentinel.mock
-        [cleanup() for cleanup in self.case.cleanups]
-        expect(self.other_thing).to != sentinel.mock
+        case = CaseWithPatcher()
+
+        expect(get_thing()).to != sentinel.mock
+
+        case.run()
+
+        expect(get_thing()).to == sentinel.mock
+        [cleanup() for cleanup in case.cleanups]
+        expect(get_thing()).to != sentinel.mock
 
     def test_patcher_lifecycle_works_on_subclasses(self):
-        expect(self.other_thing).to != sentinel.mock
-        self.subclassed_case.setUp()
-        expect(self.other_thing).to == sentinel.mock
-        [cleanup() for cleanup in self.subclassed_case.cleanups]
-        expect(self.other_thing).to != sentinel.mock
+        case = SubclassedCaseWithPatcher()
+
+        expect(get_thing()).to != sentinel.mock
+
+        case.run()
+
+        expect(get_thing()).to == sentinel.mock
+        [cleanup() for cleanup in case.cleanups]
+        expect(get_thing()).to != sentinel.mock
 
     def test_patcher_patches_with_a_magic_mock_if_no_function_decorated(self):
-        expect(self.other_it()).to != 12
-        self.case.setUp()
-        expect(self.other_it()).to == 12
-        self.case.cleanups[0]()
-        expect(self.other_thing).to != 12
+        case = CaseWithPatcher()
 
-    def test_calls_super_setup(self):
-        expect(self.case.setups).to == 0
-        self.case.setUp()
-        expect(self.case.setups).to == 1
+        expect(get_it()()).to != 12
+        case.run()
+        expect(get_it()()).to == 12
 
-    def test_calls_super_teardown(self):
-        expect(self.case.teardowns).to == 0
-        self.case.tearDown()
-        expect(self.case.teardowns).to == 1
+        case.cleanups[0]()
+        expect(get_thing()).to != 12

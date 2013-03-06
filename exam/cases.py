@@ -7,14 +7,6 @@ from exam.asserts import AssertsMixin
 import inspect
 
 
-def unique(iterable):
-    seen = set()
-    for value in iterable:
-        if value not in seen:
-            seen.add(value)
-            yield value
-
-
 class MultipleGeneratorsContextManager(object):
 
     def __init__(self, *generators):
@@ -34,13 +26,13 @@ class MultipleGeneratorsContextManager(object):
 class Exam(AssertsMixin):
 
     @before
-    def setup_patchers(self):
-        for attr, patchr in self.attrs_of_type(patcher):
+    def __setup_patchers(self):
+        for attr, patchr in self.__attrs_of_type(patcher):
             patch_object = patchr.build_patch(self)
             setattr(self, attr, patch_object.start())
             self.addCleanup(patch_object.stop)
 
-    def attrs_of_type(self, kind):
+    def __attrs_of_type(self, kind):
         for base in reversed(inspect.getmro(type(self))):
             for attr, class_value in vars(base).iteritems():
                 resolved_value = getattr(type(self), attr, False)
@@ -55,19 +47,13 @@ class Exam(AssertsMixin):
                 else:
                     yield attr, resolved_value
 
-    def setUp(self):
-        getattr(super(Exam, self), 'setUp', noop)()
-
-        for _, value in self.attrs_of_type(before):
-            value(self)
-
-    def tearDown(self):
-        getattr(super(Exam, self), 'tearDown', noop)()
-
-        for _, value in self.attrs_of_type(after):
+    def __run_hooks(self, hook):
+        for _, value in self.__attrs_of_type(hook):
             value(self)
 
     def run(self, *args, **kwargs):
-        generators = (value(self) for _, value in self.attrs_of_type(around))
+        generators = (value(self) for _, value in self.__attrs_of_type(around))
         with MultipleGeneratorsContextManager(*generators):
-            super(Exam, self).run(*args, **kwargs)
+            self.__run_hooks(before)
+            getattr(super(Exam, self), 'run', noop)(*args, **kwargs)
+            self.__run_hooks(after)
