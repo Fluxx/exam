@@ -62,6 +62,7 @@ class patcher(object):
         self.args = args
         self.kwargs = kwargs
         self.func = None
+        self.patch_func = patch
 
     def __call__(self, func):
         self.func = func
@@ -71,4 +72,10 @@ class patcher(object):
         if self.func:
             self.kwargs['new'] = self.func(instance)
 
-        return patch(*self.args, **self.kwargs)
+        return self.patch_func(*self.args, **self.kwargs)
+
+    @classmethod
+    def object(cls, *args, **kwargs):
+        instance = cls(*args, **kwargs)
+        instance.patch_func = patch.object
+        return instance

@@ -223,6 +223,26 @@ If you're happy with the default constructed mock object for a patch (``MagicMoc
 
         logger = patcher('coffee.logger')
 
+
+``exam.decorators.patcher.object``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``patcher.object`` decorator provides the same features as the ``patcher`` decorator, but works with patching attributes of objects (similar to mock's ``mock.patch.object``).  For example, here is how you would use patcher to patch the ``objects`` property of the ``User`` class:
+
+.. code:: python
+
+    from exam.decorators import patcher
+    from exam.cases import Exam
+
+    from myapp import User
+
+    class MyTest(Exam, TestCase):
+
+        manager = patcher.object(User, 'objects')
+
+As with the vanilla ``patcher``, in your test case, ``self.manager`` will be the mock object that ``User.objects`` was patched with.
+
+
 ``exam.helpers``
 ~~~~~~~~~~~~~~~~
 
