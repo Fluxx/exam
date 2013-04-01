@@ -65,6 +65,16 @@ class CaseWithBeforeHook(BaseTestCase):
         self.calls.append('run before')
 
 
+class CaseWithDecoratedBeforeHook(BaseTestCase):
+
+    def setup_some_state(self):
+        self.state = True
+
+    @before(setup_some_state)
+    def should_have_run_before(self):
+        pass
+
+
 class SubclassWithBeforeHook(CaseWithBeforeHook):
 
     @before
@@ -129,6 +139,12 @@ class TestExam(Exam, TestCase):
         expect(case.calls).to == []
         case.run()
         expect(case.calls_before_run).to == ['run before']
+
+    def test_before_decorator_runs_func_before_function(self):
+        case = CaseWithDecoratedBeforeHook()
+        expect(hasattr(case, 'state')).to == False
+        case.should_have_run_before()
+        expect(case.state).to == True
 
     def test_after_adds_each_method_after_test_case(self):
         case = CaseWithAfterHook()
