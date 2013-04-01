@@ -141,6 +141,47 @@ When Exam runs these hooks, the output would be:
 
 As you can see even though the parent class defines a ``reset_database``, because the child class overwrote it, the child's version is run intead, and also at the same time as the rest of the child's ``@before`` hooks.
 
+``@before`` hooks can alse be constructed with other functions in your test case, decorating actual test methods.  When this strategy is used, Exam will run the function ``@before`` is constructed with before running that particular test method.
+
+.. code:: python
+
+    from exam.decorators import before, fixture
+    from exam.cases import Exam
+
+    from myapp import User
+
+    class MyTest(Exam, TestCase):
+
+        user = fixture(User)
+
+        @before
+        def create_user(self):
+            self.user.create()
+
+        def confirm_user(self):
+            self.user.confirm()
+
+        @before(confirm_user)
+        def test_confirmed_users_have_no_token(self):
+            self.assertFalse(self.user.token)
+
+        def test_user_display_name_exists(self):
+            self.assertTrue(self.user.display_name)
+
+In the above example, the ``confirm_user`` method is run immediatly before the ``test_confirmed_users_have_no_token`` method, but **not** the ``test_user_display_name_exists`` method.  The ``@before`` globally decorated ``create_user`` method still runs before each test method.
+
+``@before`` can also be constructed with multiple functions to call before running the test method:
+
+.. code:: python
+
+    class MyTest(Exam, TestCase):
+
+        @before(func1, func2)
+        def test_does_things(self):
+            does_things()
+
+In the above example, ``func1`` and ``func2`` are called in order before ``test_does_things`` is run.
+
 ``exam.decorators.after``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

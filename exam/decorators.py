@@ -4,6 +4,8 @@ from mock import patch
 from functools import partial
 import types
 
+import exam.cases
+
 
 class fixture(object):
 
@@ -37,15 +39,36 @@ class fixture(object):
 
 class base(object):
 
-    def __init__(self, thing):
-        self.thing = thing
+    def __init__(self, *things):
+        self.init_callables = things
 
     def __call__(self, instance):
-        return self.thing(instance)
+        return self.init_callables[0](instance)
 
 
 class before(base):
-    pass
+
+    def __call__(self, thing):
+        # There a couple possible situations at this point:
+        #
+        # If ``thing`` is an instance of a test case, this means that we
+        # ``init_callable`` is the function we want to decorate.  As such,
+        # simply call that callable with the instance.
+        if isinstance(thing, exam.cases.Exam):
+            return self.init_callables[0](thing)
+        # If ``thing is not an instance of the test case, it means thi before
+        # hook was constructed with a callable that we need to run before
+        # actually running the decorated function.  It also means that ``thing``
+        # is the function we're decorating, so we need to return a callable that
+        # accepts a test case instance and, when called, calls the
+        # ``init_callable`` first, followed by the actual function we are
+        # decorating.
+        else:
+            def inner(testcase):
+                [f(testcase) for f in self.init_callables]
+                thing(testcase)
+
+            return inner
 
 
 class after(base):
