@@ -39,21 +39,14 @@ class fixture(object):
 
 class base(object):
 
-    def __init__(self, thing):
-        self.init_callable = thing
+    def __init__(self, *things):
+        self.init_callables = things
 
     def __call__(self, instance):
-        return self.init_callable(instance)
+        return self.init_callables[0](instance)
 
 
 class before(base):
-
-    def __build_run_before_proxy(self, decorated_func):
-        def inner(testcase):
-            self.init_callable(testcase)
-            decorated_func(testcase)
-
-        return inner
 
     def __call__(self, thing):
         # There a couple possible situations at this point:
@@ -62,7 +55,7 @@ class before(base):
         # ``init_callable`` is the function we want to decorate.  As such,
         # simply call that callable with the instance.
         if isinstance(thing, exam.cases.Exam):
-            return self.init_callable(thing)
+            return self.init_callables[0](thing)
         # If ``thing is not an instance of the test case, it means thi before
         # hook was constructed with a callable that we need to run before
         # actually running the decorated function.  It also means that ``thing``
@@ -72,7 +65,7 @@ class before(base):
         # decorating.
         else:
             def inner(testcase):
-                self.init_callable(testcase)
+                [f(testcase) for f in self.init_callables]
                 thing(testcase)
 
             return inner

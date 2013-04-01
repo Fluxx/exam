@@ -170,6 +170,18 @@ As you can see even though the parent class defines a ``reset_database``, becaus
 
 In the above example, the ``confirm_user`` method is run immediatly before the ``test_confirmed_users_have_no_token`` method, but **not** the ``test_user_display_name_exists`` method.  The ``@before`` globally decorated ``create_user`` method still runs before each test method.
 
+``@before`` can also be constructed with multiple functions to call before running the test method:
+
+.. code:: python
+
+    class MyTest(Exam, TestCase):
+
+        @before(func1, func2)
+        def test_does_things(self):
+            does_things()
+
+In the above example, ``func1`` and ``func2`` are called in order before ``test_does_things`` is run.
+
 ``exam.decorators.after``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

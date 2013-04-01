@@ -70,8 +70,15 @@ class CaseWithDecoratedBeforeHook(BaseTestCase):
     def setup_some_state(self):
         self.state = True
 
+    def setup_some_other_state(self):
+        self.other_state = True
+
     @before(setup_some_state)
     def should_have_run_before(self):
+        pass
+
+    @before(setup_some_state, setup_some_other_state)
+    def should_have_run_both_states(self):
         pass
 
 
@@ -145,6 +152,14 @@ class TestExam(Exam, TestCase):
         expect(hasattr(case, 'state')).to == False
         case.should_have_run_before()
         expect(case.state).to == True
+
+    def test_before_decorator_runs_multiple_funcs(self):
+        case = CaseWithDecoratedBeforeHook()
+        expect(hasattr(case, 'state')).to == False
+        expect(hasattr(case, 'other_state')).to == False
+        case.should_have_run_both_states()
+        expect(case.state).to == True
+        expect(case.other_state).to == True
 
     def test_after_adds_each_method_after_test_case(self):
         case = CaseWithAfterHook()
