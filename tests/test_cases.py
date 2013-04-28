@@ -6,7 +6,7 @@ from exam.cases import Exam
 
 from describe import expect
 
-from dummy import get_thing, get_it
+from dummy import get_thing, get_it, get_prop, ThingClass
 
 
 class SimpleTestCase(object):
@@ -134,6 +134,17 @@ class SubclassedCaseWithPatcher(CaseWithPatcher):
     pass
 
 
+class CaseWithPatcherObject(BaseTestCase):
+
+    @patcher.object(ThingClass, 'prop')
+    def dummy_thing(self):
+        return 15
+
+
+class SubclassedCaseWithPatcherObject(CaseWithPatcherObject):
+    pass
+
+
 # TODO: Make the subclass checking just be a subclass of the test case
 class TestExam(Exam, TestCase):
 
@@ -239,3 +250,23 @@ class TestExam(Exam, TestCase):
 
         case.cleanups[0]()
         expect(get_thing()).to != 12
+
+    def test_patcher_object_patches_object(self):
+        case = CaseWithPatcherObject()
+        expect(get_prop()).to != 15
+
+        case.run()
+        expect(get_prop()).to == 15
+
+        [cleanup() for cleanup in case.cleanups]
+        expect(get_prop()).to != 15
+
+    def test_patcher_object_works_with_subclasses(self):
+        case = SubclassedCaseWithPatcherObject()
+
+        expect(get_prop()).to != 15
+        case.run()
+        expect(get_prop()).to == 15
+
+        [cleanup() for cleanup in case.cleanups]
+        expect(get_prop()).to != 15
