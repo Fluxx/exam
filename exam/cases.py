@@ -34,7 +34,7 @@ class Exam(AssertsMixin):
 
     def __attrs_of_type(self, kind):
         for base in reversed(inspect.getmro(type(self))):
-            for attr, class_value in vars(base).iteritems():
+            for attr, class_value in vars(base).items():
                 resolved_value = getattr(type(self), attr, False)
 
                 if type(resolved_value) is not kind:
