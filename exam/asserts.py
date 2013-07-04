@@ -7,9 +7,11 @@ IRRELEVANT = object()
 
 class ChangeWatcher(object):
 
-    #: Used in the equality failure message during exit of the contexdt manager
-    #: to explain why the at ext check failed.
-    EQUALITY_FAILURE_SIGN = {ne: '!=', eq: '=='}
+    POSTCONDITION_FAILURE_MESSAGE = {
+        ne: 'Value did not change',
+        eq: 'Value changed from {before} to {after}',
+        'invalid': 'Expected after to be {expected_after}, but was {after}'
+    }
 
     def __init__(self, compare, thing, *args, **kwargs):
         self.thing = thing
@@ -26,7 +28,10 @@ class ChangeWatcher(object):
 
         if not self.expected_before is IRRELEVANT:
             check = self.compare(self.before, self.expected_before)
-            assert not check, self.__precondition_failure_msg_for('before')
+            assert not check, "Before value expected to be %s, but was %s" % (
+                self.expected_before,
+                self.before
+            )
 
     def __exit__(self, exec_type, exec_value, traceback):
         if exec_type is not None:
@@ -34,29 +39,22 @@ class ChangeWatcher(object):
 
         self.after = self.__apply()
 
-        if not self.expected_after is IRRELEVANT:
-            check = self.compare(self.after, self.expected_after)
-            assert not check, self.__precondition_failure_msg_for('after')
+        met_precondition = self.compare(self.before, self.after)
+        after_value_matches = self.after == self.expected_after
 
-        at_exist_check = self.compare(self.before, self.after)
-        assert at_exist_check, self.__equality_failure_message
+        # Changed when it wasn't supposed to, or, didn't change when it was
+        if not met_precondition:
+            self.__raise_postcondition_error(self.compare)
+        # Do care about the after value, but it wasn't equal
+        elif self.expected_after is not IRRELEVANT and not after_value_matches:
+            self.__raise_postcondition_error('invalid')
 
     def __apply(self):
         return self.thing(*self.args, **self.kwargs)
 
-    @property
-    def __equality_failure_message(self):
-        return 'Expected before %r %s %r after' % (
-            self.before,
-            self.EQUALITY_FAILURE_SIGN[self.compare],
-            self.after
-        )
-
-    def __precondition_failure_msg_for(self, condition):
-        return '%s value did not change (%s)' % (
-            condition,
-            getattr(self, condition)
-        )
+    def __raise_postcondition_error(self, key):
+        message = self.POSTCONDITION_FAILURE_MESSAGE[key]
+        raise AssertionError(message.format(**vars(self)))
 
 
 class AssertsMixin(object):

@@ -53,6 +53,13 @@ class AssertChangesMixin(Exam, TestCase):
             pass
 
     def test_raises_assertion_error_if_value_changes(self):
-        with self.assertRaisesRegexp(AssertionError, '=='):
+        msg = 'Value changed from 0 to 1'
+        with self.assertRaisesRegexp(AssertionError, msg):
             with self.assertDoesNotChange(len, self.thing):
+                self.thing.append(1)
+
+    def test_assertion_error_mentions_unexpected_result_at_after(self):
+        msg = 'Expected after to be 3, but was 1'
+        with self.assertRaisesRegexp(AssertionError, msg):
+            with self.assertChanges(len, self.thing, after=3):
                 self.thing.append(1)
