@@ -84,7 +84,7 @@ class mock_import(patch.dict):
         for i in range(len(self.remainder)):
             tail_parts = self.remainder[0:i + 1]
             key = '.'.join([self.base] + tail_parts)
-            reduction = reduce(self.FROM_X_GET_Y, tail_parts, self.mock)
+            reduction = functools.reduce(self.FROM_X_GET_Y, tail_parts, self.mock)
             self.modules[key] = reduction
 
         super(mock_import, self).__init__('sys.modules', self.modules)

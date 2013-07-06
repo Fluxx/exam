@@ -1,6 +1,5 @@
-from describe import expect
 from mock import sentinel
-from unittest2 import TestCase
+from tests import TestCase
 
 from exam.objects import always, noop
 
@@ -21,4 +20,4 @@ class TestAlways(TestCase):
         noop(1, 2, 3, key='val', another='thing')
 
     def test_returns_none(self):
-        expect(noop()).to == None
+        self.assertIsNone(noop())

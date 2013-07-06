@@ -1,6 +1,4 @@
-from unittest2 import TestCase
-
-from describe import expect
+from tests import TestCase
 
 
 import exam
@@ -12,7 +10,7 @@ class TestExam(TestCase):
 
     def test_exam_is_cases_exam(self):
         from exam.cases import Exam
-        expect(exam.Exam).to == Exam
+        self.assertEqual(exam.Exam, Exam)
 
     def test_imports_all_the_decorators(self):
         import exam.decorators
@@ -21,4 +19,4 @@ class TestExam(TestCase):
             from_decorators = getattr(exam.decorators, decorator)
             from_root = getattr(exam, decorator)
 
-            expect(from_root).to == from_decorators
+            self.assertEqual(from_root, from_decorators)

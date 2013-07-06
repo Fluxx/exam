@@ -13,12 +13,12 @@ class MultipleGeneratorsContextManager(object):
         self.generators = generators
 
     def __enter__(self, *args, **kwargs):
-        [g.next() for g in self.generators]
+        [next(g) for g in self.generators]
 
     def __exit__(self, *args, **kwargs):
         for generator in reversed(self.generators):
             try:
-                generator.next()
+                next(generator)
             except StopIteration:
                 pass
 

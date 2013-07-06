@@ -1,9 +1,7 @@
-from unittest2 import TestCase
+from tests import TestCase
 
 from exam import Exam, fixture
 from exam.asserts import AssertsMixin
-
-from describe import expect
 
 
 class AssertChangesMixin(Exam, TestCase):
@@ -33,13 +31,13 @@ class AssertChangesMixin(Exam, TestCase):
     def test_verifies_value_must_change_no_matter_what(self):
         self.thing.append(1)
 
-        with expect.to_raise_error(AssertionError):
+        with self.assertRaises(AssertionError):
             self.no_op_context(after=1)
 
-        with expect.to_raise_error(AssertionError):
+        with self.assertRaises(AssertionError):
             self.no_op_context(before=1)
 
-        with expect.to_raise_error(AssertionError):
+        with self.assertRaises(AssertionError):
             self.no_op_context()
 
     def test_reraises_exception_if_raised_in_context(self):

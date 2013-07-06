@@ -1,10 +1,8 @@
-from unittest2 import TestCase
+from tests import TestCase
 from mock import patch, Mock, sentinel
 
 from exam.helpers import intercept, rm_f, track, mock_import, call, effect
 from exam.decorators import fixture
-
-from describe import expect
 
 
 @patch('exam.helpers.shutil')
@@ -35,8 +33,8 @@ class TestTrack(TestCase):
 
     def test_makes_new_mock_and_attaches_each_kwarg_to_it(self):
         tracker = track(foo=self.foo_mock, bar=self.bar_mock)
-        expect(tracker.foo).to == self.foo_mock
-        expect(tracker.bar).to == self.bar_mock
+        self.assertEqual(tracker.foo, self.foo_mock)
+        self.assertEqual(tracker.bar, self.bar_mock)
 
 
 class TestMockImport(TestCase):
@@ -44,25 +42,25 @@ class TestMockImport(TestCase):
     def test_is_a_context_manager_that_yields_patched_import(self):
         with mock_import('foo') as mock_foo:
             import foo
-            expect(foo).to == mock_foo
+            self.assertEqual(foo, mock_foo)
 
     def test_mocks_import_for_packages(self):
         with mock_import('foo.bar.baz') as mock_baz:
             import foo.bar.baz
-            expect(foo.bar.baz).to == mock_baz
+            self.assertEqual(foo.bar.baz, mock_baz)
 
     @mock_import('foo')
     def test_can_be_used_as_a_decorator_too(self, mock_foo):
         import foo
-        expect(foo).to == mock_foo
+        self.assertEqual(foo, mock_foo)
 
     @mock_import('foo')
     @mock_import('bar')
     def test_stacked_adds_args_bottom_up(self, mock_bar, mock_foo):
         import foo
         import bar
-        expect(mock_bar).to == bar
-        expect(mock_foo).to == foo
+        self.assertEqual(mock_bar, bar)
+        self.assertEqual(mock_foo, foo)
 
 
 class TestIntercept(TestCase):
@@ -84,15 +82,15 @@ class TestIntercept(TestCase):
         counter.calls = 0
 
         intercept(ex, 'method', counter)
-        expect(counter.calls).to == 0
+        self.assertEqual(counter.calls, 0)
         assert ex.method(sentinel.POSITIONAL_ARGUMENT,
             keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
-        expect(counter.calls).to == 1
+        self.assertEqual(counter.calls, 1)
 
         ex.method.unwrap()
         assert ex.method(sentinel.POSITIONAL_ARGUMENT,
             keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
-        expect(counter.calls).to == 1
+        self.assertEqual(counter.calls, 1)
 
 
 class TestEffect(TestCase):
@@ -106,10 +104,10 @@ class TestEffect(TestCase):
         ]
         side_effecet = effect(*config)
 
-        expect(side_effecet(1)).to == 2
-        expect(side_effecet('a')).to == 3
-        expect(side_effecet(1, b=2)).to == 4
-        expect(side_effecet(c=3)).to == 5
+        self.assertEqual(side_effecet(1), 2)
+        self.assertEqual(side_effecet('a'), 3)
+        self.assertEqual(side_effecet(1, b=2), 4)
+        self.assertEqual(side_effecet(c=3), 5)
 
     def test_raises_type_error_when_called_with_unknown_args(self):
         side_effect = effect((call(1), 5))
@@ -117,4 +115,4 @@ class TestEffect(TestCase):
 
     def test_can_be_used_with_mutable_data_structs(self):
         side_effect = effect((call([1, 2, 3]), 'list'))
-        expect(side_effect([1, 2, 3])).to == 'list'
+        self.assertEqual(side_effect([1, 2, 3]), 'list')

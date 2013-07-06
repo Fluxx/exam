@@ -1,4 +1,4 @@
-from unittest2 import TestCase
+from tests import TestCase
 
 from exam.mock import Mock
 from exam.decorators import fixture, before

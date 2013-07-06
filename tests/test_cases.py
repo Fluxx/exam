@@ -1,12 +1,10 @@
 from mock import sentinel
-from unittest2 import TestCase
+from tests import TestCase
 
 from exam.decorators import before, after, around, patcher
 from exam.cases import Exam
 
-from describe import expect
-
-from dummy import get_thing, get_it, get_prop, ThingClass
+from tests.dummy import get_thing, get_it, get_prop, ThingClass
 
 
 class SimpleTestCase(object):
@@ -150,123 +148,123 @@ class TestExam(Exam, TestCase):
 
     def test_assert_changes_is_asserts_mixin_assert_changes(self):
         from exam.asserts import AssertsMixin
-        expect(AssertsMixin.assertChanges, Exam.assertChanges)
+        self.assertEqual(AssertsMixin.assertChanges, Exam.assertChanges)
 
     def test_before_runs_method_before_test_case(self):
         case = CaseWithBeforeHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
         case.run()
-        expect(case.calls_before_run).to == ['run before']
+        self.assertEqual(case.calls_before_run, ['run before'])
 
     def test_before_decorator_runs_func_before_function(self):
         case = CaseWithDecoratedBeforeHook()
-        expect(hasattr(case, 'state')).to == False
+        self.assertFalse(hasattr(case, 'state'))
         case.should_have_run_before()
-        expect(case.state).to == True
+        self.assertTrue(case.state)
 
     def test_before_decorator_runs_multiple_funcs(self):
         case = CaseWithDecoratedBeforeHook()
-        expect(hasattr(case, 'state')).to == False
-        expect(hasattr(case, 'other_state')).to == False
+        self.assertFalse(hasattr(case, 'state'))
+        self.assertFalse(hasattr(case, 'other_state'))
         case.should_have_run_both_states()
-        expect(case.state).to == True
-        expect(case.other_state).to == True
+        self.assertTrue(case.state)
+        self.assertTrue(case.other_state)
 
     def test_after_adds_each_method_after_test_case(self):
         case = CaseWithAfterHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
         case.run()
-        expect(case.calls).to == ['run before', 'run after']
+        self.assertEqual(case.calls, ['run before', 'run after'])
 
     def test_around_calls_methods_before_and_after_run(self):
         case = CaseWithAroundHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
         case.run()
-        expect(case.calls_before_run).to == ['run around before']
-        expect(case.calls).to == ['run around before', 'run around after']
+        self.assertEqual(case.calls_before_run, ['run around before'])
+        self.assertEqual(case.calls, ['run around before', 'run around after'])
 
     def test_before_works_on_subclasses(self):
         case = SubclassWithBeforeHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
 
         case.run()
 
         # The only concern with ordering here is that the parent class's @before
         # hook fired before it's parents.  The actual order of the @before hooks
         # within a level of class is irrelevant.
-        expect(case.calls).to == ['run before', 'subclass run before']
+        self.assertEqual(case.calls, ['run before', 'subclass run before'])
 
     def test_after_works_on_subclasses(self):
         case = SubclassCaseWithAfterHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
 
         case.run()
 
-        expect(case.calls_before_run).to == ['run before']
-        expect(case.calls).to == ['run before', 'run after', 'subclass run after']
+        self.assertEqual(case.calls_before_run, ['run before'])
+        self.assertEqual(case.calls, ['run before', 'run after', 'subclass run after'])
 
     def test_around_works_with_subclasses(self):
         case = SubclassCaseWithAroundHook()
-        expect(case.calls).to == []
+        self.assertEqual(case.calls, [])
 
         case.run()
 
-        expect(case.calls_before_run).to == ['subclass run around before']
-        expect(case.calls).to == ['subclass run around before', 'subclass run around after']
+        self.assertEqual(case.calls_before_run, ['subclass run around before'])
+        self.assertEqual(case.calls, ['subclass run around before', 'subclass run around after'])
 
     def test_patcher_start_value_is_added_to_case_dict_on_run(self):
         case = CaseWithPatcher()
         case.run()
-        expect(case.vars_when_run['dummy_thing']).to == sentinel.mock
+        self.assertEqual(case.vars_when_run['dummy_thing'], sentinel.mock)
 
     def test_patcher_patches_object_on_setup_and_adds_patcher_to_cleanup(self):
         case = CaseWithPatcher()
 
-        expect(get_thing()).to != sentinel.mock
+        self.assertNotEqual(get_thing(), sentinel.mock)
 
         case.run()
 
-        expect(get_thing()).to == sentinel.mock
+        self.assertEqual(get_thing(), sentinel.mock)
         [cleanup() for cleanup in case.cleanups]
-        expect(get_thing()).to != sentinel.mock
+        self.assertNotEqual(get_thing(), sentinel.mock)
 
     def test_patcher_lifecycle_works_on_subclasses(self):
         case = SubclassedCaseWithPatcher()
 
-        expect(get_thing()).to != sentinel.mock
+        self.assertNotEqual(get_thing(), sentinel.mock)
 
         case.run()
 
-        expect(get_thing()).to == sentinel.mock
+        self.assertEqual(get_thing(), sentinel.mock)
         [cleanup() for cleanup in case.cleanups]
-        expect(get_thing()).to != sentinel.mock
+        self.assertNotEqual(get_thing(), sentinel.mock)
 
     def test_patcher_patches_with_a_magic_mock_if_no_function_decorated(self):
         case = CaseWithPatcher()
 
-        expect(get_it()()).to != 12
+        self.assertNotEqual(get_it()(), 12)
         case.run()
-        expect(get_it()()).to == 12
+        self.assertEqual(get_it()(), 12)
 
         case.cleanups[0]()
-        expect(get_thing()).to != 12
+        self.assertNotEqual(get_thing(), 12)
 
     def test_patcher_object_patches_object(self):
         case = CaseWithPatcherObject()
-        expect(get_prop()).to != 15
+        self.assertNotEqual(get_prop(), 15)
 
         case.run()
-        expect(get_prop()).to == 15
+        self.assertEqual(get_prop(), 15)
 
         [cleanup() for cleanup in case.cleanups]
-        expect(get_prop()).to != 15
+        self.assertNotEqual(get_prop(), 15)
 
     def test_patcher_object_works_with_subclasses(self):
         case = SubclassedCaseWithPatcherObject()
 
-        expect(get_prop()).to != 15
+        self.assertNotEqual(get_prop(), 15)
         case.run()
-        expect(get_prop()).to == 15
+        self.assertEqual(get_prop(), 15)
 
         [cleanup() for cleanup in case.cleanups]
-        expect(get_prop()).to != 15
+        self.assertNotEqual(get_prop(), 15)

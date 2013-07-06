@@ -23,4 +23,4 @@ class Mock(BaseMock):
 
     def __calls_matching(self, *args, **kwargs):
         calls_match = lambda other_call: call(*args, **kwargs) == other_call
-        return filter(calls_match, self.call_args_list)
+        return list(filter(calls_match, self.call_args_list))
