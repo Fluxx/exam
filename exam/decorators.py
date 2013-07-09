@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from mock import patch
-from functools import partial
+from functools import partial, wraps
 import types
 
 import exam.cases
@@ -64,6 +64,7 @@ class before(base):
         # ``init_callable`` first, followed by the actual function we are
         # decorating.
         else:
+            @wraps(thing)
             def inner(testcase):
                 [f(testcase) for f in self.init_callables]
                 thing(testcase)

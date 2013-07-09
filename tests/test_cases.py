@@ -170,6 +170,12 @@ class TestExam(Exam, TestCase):
         self.assertTrue(case.state)
         self.assertTrue(case.other_state)
 
+    def test_before_decorator_does_not_squash_func_name(self):
+        self.assertEqual(
+            CaseWithDecoratedBeforeHook.should_have_run_before.__name__,
+            'should_have_run_before'
+        )
+
     def test_after_adds_each_method_after_test_case(self):
         case = CaseWithAfterHook()
         self.assertEqual(case.calls, [])
