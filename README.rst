@@ -49,7 +49,7 @@ All of the decorators in ``exam.decorators``, as well as the ``Exam`` test case 
 ``exam.decorators.fixture``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``@fixture`` decorator turns a method into a property (similar to the ``@property`` decorator, but also memoizes the return value. This lets you reference the property in your tests, i.e. ``self.grounds``, and it will always reference the exact same instance every time.
+The ``@fixture`` decorator turns a method into a property (similar to the ``@property`` decorator, but also memoizes the return value). This lets you reference the property in your tests, i.e. ``self.grounds``, and it will always reference the exact same instance every time.
 
 .. code:: python
 
