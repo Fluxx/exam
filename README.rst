@@ -17,7 +17,7 @@ A simple ``pip install exam`` should do the trick.
 Rationale
 --------
 
-Aside from the obvious "does the code work?", writings tests has many additional goals and bennefits:
+Aside from the obvious "does the code work?", writings tests has many additional goals and benefits:
 
 1. If written semantically, reading tests can help demostrate how the code is supposed to work to other developers.
 2. If quick running, tests provide feedback during development that your changes are working or not having an adverse side effects.
@@ -25,7 +25,7 @@ Aside from the obvious "does the code work?", writings tests has many additional
 
 Unfortunately, the common pattern for writing Python unit tests tends to not offer any of these advantages.  Often times results in ineffecient and unnessarily obtuse testing code.  Additionally, common uses of the `mock` library can often result in repetitive boiler-plate code or ineffeciency during test runs.
 
-`exam` aims to improve the state of Python test writing by providing a toolkit of useful functionality to make writing quick, correct and useful tests and painless as possible.
+`exam` aims to improve the state of Python test writing by providing a toolkit of useful functionality to make writing quick, correct and useful tests and as painless as possible.
 
 Usage
 --------
@@ -236,7 +236,7 @@ The ``@patcher`` decorator is shorthand for the following boiler plate code:
      def tearDown(self):
          self.stats_patcher.stop()
 
-Often, manually controlling a patch's start/stop is done to provide a test case property (here, ``self.stats``) for the mock object you are patching with.  This is handy if you want the mock to have defaut behavior for most tests, but change it slightly for certain ones -- i.e absorb all calls most of the time, but for certain tests have it raise an exception.
+Often, manually controlling a patch's start/stop is done to provide a test case property (here, ``self.stats``) for the mock object you are patching with.  This is handy if you want the mock to have default behavior for most tests, but change it slightly for certain ones -- i.e absorb all calls most of the time, but for certain tests have it raise an exception.
 
 Using the ``@patcher`` decorator, the above code can simply be written as:
 
@@ -415,7 +415,7 @@ To properly test this, you should save that soldier's rank to a temporary variab
     test_changes_rank(self):
         old_rank = self.soldier.rank
         promote(self.soldier, 'general')
-        self.assertEaual(self.soldier.rank, 'general')
+        self.assertEqual(self.soldier.rank, 'general')
         self.assertNotEqual(self.soldier.rank, old_rank)
 
 Checking the old rank is not the same is the new rank is important.  If, for some reason there is a bug or something to where ``self.soldier`` is created with the rank of ``general``, but ``promote`` is not working, this test would still pass!
@@ -430,7 +430,7 @@ To solve this, you can use Exam's ``assertChanges``:
 
 This assert is doing a few things.
 
-1. It asserts that the rank once the cotext is run is the expected ``general``.
+1. It asserts that the rank once the context is run is the expected ``general``.
 2. It asserts that the context **changes** the value of ``self.soldier.rank``.
 3. It doesn't actually care what the old value of ``self.soldier.rank`` was, as long as it changed when the context was run.
 
@@ -456,7 +456,7 @@ Similar to ``assertChanges``, ``assertDoesNotChange`` asserts that the code insi
         self.assertDoesNoteChange(getattr, self.soldier, 'rank'):
             self.soldier.march()
 
-Unlike ``assertChanges``, ``assertDoesNotChange`` does not take ``before`` or ``after`` kwargs.  It simply asserts that the value of the callable did not chage when the context was run.
+Unlike ``assertChanges``, ``assertDoesNotChange`` does not take ``before`` or ``after`` kwargs.  It simply asserts that the value of the callable did not change when the context was run.
 
 License
 -------
