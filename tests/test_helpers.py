@@ -83,12 +83,14 @@ class TestIntercept(TestCase):
 
         intercept(ex, 'method', counter)
         self.assertEqual(counter.calls, 0)
-        assert ex.method(sentinel.POSITIONAL_ARGUMENT,
+        assert ex.method(
+            sentinel.POSITIONAL_ARGUMENT,
             keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
         self.assertEqual(counter.calls, 1)
 
         ex.method.unwrap()
-        assert ex.method(sentinel.POSITIONAL_ARGUMENT,
+        assert ex.method(
+            sentinel.POSITIONAL_ARGUMENT,
             keyword=sentinel.KEYWORD_ARGUMENT) is sentinel.METHOD_RESULT
         self.assertEqual(counter.calls, 1)
 

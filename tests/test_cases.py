@@ -195,8 +195,10 @@ class TestExam(Exam, TestCase):
 
         case.run()
 
-        # The only concern with ordering here is that the parent class's @before
-        # hook fired before it's parents.  The actual order of the @before hooks
+        # The only concern with ordering here is
+        # that the parent class's @before
+        # hook fired before it's parents.
+        # The actual order of the @before hooks
         # within a level of class is irrelevant.
         self.assertEqual(case.calls, ['run before', 'subclass run before'])
 
@@ -207,7 +209,9 @@ class TestExam(Exam, TestCase):
         case.run()
 
         self.assertEqual(case.calls_before_run, ['run before'])
-        self.assertEqual(case.calls, ['run before', 'run after', 'subclass run after'])
+        self.assertEqual(case.calls, ['run before',
+                                      'run after',
+                                      'subclass run after'])
 
     def test_around_works_with_subclasses(self):
         case = SubclassCaseWithAroundHook()
@@ -216,7 +220,8 @@ class TestExam(Exam, TestCase):
         case.run()
 
         self.assertEqual(case.calls_before_run, ['subclass run around before'])
-        self.assertEqual(case.calls, ['subclass run around before', 'subclass run around after'])
+        self.assertEqual(case.calls, ['subclass run around before',
+                                      'subclass run around after'])
 
     def test_patcher_start_value_is_added_to_case_dict_on_run(self):
         case = CaseWithPatcher()
