@@ -15,7 +15,7 @@ class fixture(object):
         self.kwargs = kwargs
 
     def __get__(self, testcase, type=None):
-        if not self in testcase.__dict__:
+        if self not in testcase.__dict__:
             # If this fixture is not present in the test case's __dict__,
             # freshly apply this fixture and store that in the dict, keyed by
             # self
