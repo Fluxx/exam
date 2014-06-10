@@ -30,8 +30,9 @@ class fixture(object):
         # functuion and return it.
         if type(self.thing) in (type, types.MethodType):
             return self.thing
-        # If not, it means that's it's a vanilla function, so either a decorated
-        # instance method in the test case body or a lambda.  In either of those
+        # If not, it means that's it's a vanilla function,
+        # so either a decorated instance method in the test case
+        # body or a lambda.  In either of those
         # cases, it's called with the test case instance (self) to the author.
         else:
             return partial(self.thing, testcase)
@@ -58,8 +59,9 @@ class before(base):
             return self.init_callables[0](thing)
         # If ``thing is not an instance of the test case, it means thi before
         # hook was constructed with a callable that we need to run before
-        # actually running the decorated function.  It also means that ``thing``
-        # is the function we're decorating, so we need to return a callable that
+        # actually running the decorated function.
+        # It also means that ``thing`` is the function we're
+        # decorating, so we need to return a callable that
         # accepts a test case instance and, when called, calls the
         # ``init_callable`` first, followed by the actual function we are
         # decorating.
