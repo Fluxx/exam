@@ -394,7 +394,7 @@ Helpful fixtures that you may want to use in your tests:
 ``exam.objects``
 ~~~~~~~~~~~~~~~~
 
-Useful objectgs for use in testing:
+Useful objects for use in testing:
 
 ``exam.objects.noop`` - callable object that always returns ``None``. no matter how it was called.
 
@@ -425,7 +425,7 @@ To solve this, you can use Exam's ``assertChanges``:
 .. code:: python
 
     def test_changes_rank(self):
-        self.assertChanges(getattr, self.soldier, 'rank', after='general'):
+        with self.assertChanges(getattr, self.soldier, 'rank', after='general'):
             promote(self.soldier, 'general')
 
 This assert is doing a few things.
@@ -439,7 +439,7 @@ The definition of ``assertChanges`` is:
 .. code:: python
     def assertChanges(thing, *args, **kwargs)
 
-1. You pass it a ``thing``, which wich be a callable.
+1. You pass it a ``thing``, which which be a callable.
 2. ``assertChanges`` then calls your ``thing`` with any ``*args`` and ``**kwargs`` additionally passed in and captures the value as the "before" value.
 3. The context is run, and then the callable is captured again as the "after" value.
 4. If before and after are not different, an ``AssertionError`` is raised.
@@ -453,7 +453,7 @@ Similar to ``assertChanges``, ``assertDoesNotChange`` asserts that the code insi
 .. code:: python
 
     def test_does_not_change_rank(self):
-        self.assertDoesNoteChange(getattr, self.soldier, 'rank'):
+        with self.assertDoesNotChange(getattr, self.soldier, 'rank'):
             self.soldier.march()
 
 Unlike ``assertChanges``, ``assertDoesNotChange`` does not take ``before`` or ``after`` kwargs.  It simply asserts that the value of the callable did not change when the context was run.
