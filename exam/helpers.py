@@ -84,7 +84,8 @@ class mock_import(patch.dict):
         for i in range(len(self.remainder)):
             tail_parts = self.remainder[0:i + 1]
             key = '.'.join([self.base] + tail_parts)
-            reduction = functools.reduce(self.FROM_X_GET_Y, tail_parts, self.mock)
+            reduction = functools.reduce(self.FROM_X_GET_Y,
+                                         tail_parts, self.mock)
             self.modules[key] = reduction
 
         super(mock_import, self).__init__('sys.modules', self.modules)
@@ -119,8 +120,8 @@ class effect(list):
     """
     Helper class that is itself callable, whose return values when called are
     configured via the tuples passed in to the constructor. Useful to build
-    ``side_effect`` callables for Mock objects.  Raises TypeError if called with
-    arguments that it was not configured with:
+    ``side_effect`` callables for Mock objects.  Raises TypeError if
+    called with arguments that it was not configured with:
 
     >>> from exam.objects import call, effect
     >>> side_effect = effect((call(1), 'with 1'), (call(2), 'with 2'))
@@ -129,12 +130,14 @@ class effect(list):
     >>> side_effect(2)
     'with 2'
 
-    Call argument equality is checked via equality (==) of the ``call``` object,
-    which is the 0th item of the configuration tuple passed in to the ``effect``
-    constructor.  By default, ``call`` objects are just ``mock.call`` objects.
+    Call argument equality is checked via equality (==)
+    of the ``call``` object, which is the 0th item of the configuration
+    tuple passed in to the ``effect`` constructor.
+    By default, ``call`` objects are just ``mock.call`` objects.
 
-    If you would like to customize this behavior, subclass `effect` and redefine
-    your own `call_class` class variable.  I.e.
+    If you would like to customize this behavior,
+    subclass `effect` and redefine your own `call_class`
+    class variable.  I.e.
 
         class myeffect(effect):
             call_class = my_call_class
@@ -157,4 +160,3 @@ class effect(list):
                 return return_value
 
         raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
-
