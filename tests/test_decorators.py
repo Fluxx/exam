@@ -77,3 +77,6 @@ class TestFixture(TestCase):
         second = instance.inline_from_method_with_arg_2
 
         self.assertNotEqual(first, second)
+
+    def test_clas_access_returns_fixture_itself(self):
+        self.assertEqual(getattr(Dummy, 'number'), Dummy.number)
