@@ -27,7 +27,7 @@ setup(
     url='https://github.com/fluxx/exam',
     description='Helpers for better testing.',
     license='MIT',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
