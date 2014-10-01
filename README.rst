@@ -19,11 +19,11 @@ Rationale
 
 Aside from the obvious "does the code work?", writings tests has many additional goals and benefits:
 
-1. If written semantically, reading tests can help demostrate how the code is supposed to work to other developers.
+1. If written semantically, reading tests can help demonstrate how the code is supposed to work to other developers.
 2. If quick running, tests provide feedback during development that your changes are working or not having an adverse side effects.
 3. If they're easy to write correctly, developers will write more tests and they will be of a higher quality.
 
-Unfortunately, the common pattern for writing Python unit tests tends to not offer any of these advantages.  Often times results in ineffecient and unnessarily obtuse testing code.  Additionally, common uses of the `mock` library can often result in repetitive boiler-plate code or ineffeciency during test runs.
+Unfortunately, the common pattern for writing Python unit tests tends to not offer any of these advantages.  Often times results in inefficient and unnecessarily obtuse testing code.  Additionally, common uses of the `mock` library can often result in repetitive boiler-plate code or inefficiency during test runs.
 
 `exam` aims to improve the state of Python test writing by providing a toolkit of useful functionality to make writing quick, correct and useful tests and as painless as possible.
 
@@ -67,7 +67,7 @@ The ``@fixture`` decorator turns a method into a property (similar to the ``@pro
 
 As you can see, ``self.user`` was used to reference the ``user`` property defined above.
 
-If all your fixture method is doing is contructing a new instance of type or calling a class method, exam provides a shorthand inline ``fixture`` syntax for constructing fixture objects.  Simply set a class variable equal to ``fixture(type_or_class_method)`` and exam witll automatically call your type or class method.
+If all your fixture method is doing is constructing a new instance of type or calling a class method, exam provides a shorthand inline ``fixture`` syntax for constructing fixture objects.  Simply set a class variable equal to ``fixture(type_or_class_method)`` and exam will automatically call your type or class method.
 
 .. code:: python
 
@@ -101,7 +101,7 @@ The ``@before`` decorator adds the method to the list of methods which are run a
             mydb.reset()
 
 
-``@before`` also hooks works through subclasses - that is to say, if a parent class has a ``@before`` hook in it, and you subclass it and define a 2nd ``@before`` hook in it, both ``@before`` hooks will be called.  Exam runs the parent's ``@before`` hook first, then runs the childs'.  Also, if your override a `@before` hook in your child class, the overriden method is run when the rest of the child classes `@before` hooks are run.
+``@before`` also hooks works through subclasses - that is to say, if a parent class has a ``@before`` hook in it, and you subclass it and define a 2nd ``@before`` hook in it, both ``@before`` hooks will be called.  Exam runs the parent's ``@before`` hook first, then runs the childs'.  Also, if your override a `@before` hook in your child class, the overridden method is run when the rest of the child classes `@before` hooks are run.
 
 For example, with hooks defined as such:
 
@@ -139,9 +139,9 @@ When Exam runs these hooks, the output would be:
     "child reset_db"
     "child hook"
 
-As you can see even though the parent class defines a ``reset_database``, because the child class overwrote it, the child's version is run intead, and also at the same time as the rest of the child's ``@before`` hooks.
+As you can see even though the parent class defines a ``reset_database``, because the child class overwrote it, the child's version is run instead, and also at the same time as the rest of the child's ``@before`` hooks.
 
-``@before`` hooks can alse be constructed with other functions in your test case, decorating actual test methods.  When this strategy is used, Exam will run the function ``@before`` is constructed with before running that particular test method.
+``@before`` hooks can also be constructed with other functions in your test case, decorating actual test methods.  When this strategy is used, Exam will run the function ``@before`` is constructed with before running that particular test method.
 
 .. code:: python
 
@@ -168,7 +168,7 @@ As you can see even though the parent class defines a ``reset_database``, becaus
         def test_user_display_name_exists(self):
             self.assertTrue(self.user.display_name)
 
-In the above example, the ``confirm_user`` method is run immediatly before the ``test_confirmed_users_have_no_token`` method, but **not** the ``test_user_display_name_exists`` method.  The ``@before`` globally decorated ``create_user`` method still runs before each test method.
+In the above example, the ``confirm_user`` method is run immediately before the ``test_confirmed_users_have_no_token`` method, but **not** the ``test_user_display_name_exists`` method.  The ``@before`` globally decorated ``create_user`` method still runs before each test method.
 
 ``@before`` can also be constructed with multiple functions to call before running the test method:
 
@@ -202,7 +202,7 @@ The compliment to ``@before``, ``@after`` adds the method to the list of methods
 ``exam.decorators.around``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Methods decorated with ``@around`` act as a conxtext manager around each test method.  In your around method, you're responsible for calling ``yield`` where you want the test case to run:
+Methods decorated with ``@around`` act as a context manager around each test method.  In your around method, you're responsible for calling ``yield`` where you want the test case to run:
 
 .. code:: python
 
@@ -217,7 +217,7 @@ Methods decorated with ``@around`` act as a conxtext manager around each test me
             yield  # Run the test
             db.rollback_transaction()
 
-``@around`` also follows the same parent/child ordering rules as ``@before`` and ``@after``, so parent ``@arounds`` will run (up until the ``yield`` statmement), then child ``@around``s will run.  After the test method has finished, however, the rest of the child's ``@around`` will run, and then the parents's.  This is done to preserve the normal behavior of nesting with context managers.
+``@around`` also follows the same parent/child ordering rules as ``@before`` and ``@after``, so parent ``@arounds`` will run (up until the ``yield`` statement), then child ``@around``s will run.  After the test method has finished, however, the rest of the child's ``@around`` will run, and then the parents'.  This is done to preserve the normal behavior of nesting with context managers.
 
 
 ``exam.decorators.patcher``
@@ -401,7 +401,7 @@ Useful objects for use in testing:
 ``exam.asserts``
 ~~~~~~~~~~~~~~~~
 
-The `asserts` module contains an `AssertsMixin` class, which is mixed into the main `Exam` test case mixin.  It contains additional asserts beoynd the ones in Python's `unittest`.
+The `asserts` module contains an `AssertsMixin` class, which is mixed into the main `Exam` test case mixin.  It contains additional asserts beyond the ones in Python's `unittest`.
 
 ``assertChanges``
 ^^^^^^^^^^^^^^^^^
