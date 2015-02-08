@@ -15,7 +15,7 @@ Installation
 A simple ``pip install exam`` should do the trick.
 
 Rationale
---------
+---------
 
 Aside from the obvious "does the code work?", writings tests has many additional goals and benefits:
 
@@ -200,7 +200,7 @@ The compliment to ``@before``, ``@after`` adds the method to the list of methods
 
 
 ``exam.decorators.around``
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Methods decorated with ``@around`` act as a context manager around each test method.  In your around method, you're responsible for calling ``yield`` where you want the test case to run:
 
@@ -266,7 +266,7 @@ If you're happy with the default constructed mock object for a patch (``MagicMoc
 
 
 ``exam.decorators.patcher.object``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``patcher.object`` decorator provides the same features as the ``patcher`` decorator, but works with patching attributes of objects (similar to mock's ``mock.patch.object``).  For example, here is how you would use patcher to patch the ``objects`` property of the ``User`` class:
 
@@ -437,6 +437,7 @@ This assert is doing a few things.
 The definition of ``assertChanges`` is:
 
 .. code:: python
+
     def assertChanges(thing, *args, **kwargs)
 
 1. You pass it a ``thing``, which which be a callable.
