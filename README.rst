@@ -348,7 +348,8 @@ the testing method (like a normal ``@patch``) decorator:
 
 Helper class that is itself callable, whose return values when called are configured via the tuples passed in to the constructor. Useful to build ``side_effect`` callables for Mock objects. Raises TypeError if called with arguments that it was not configured with:
 
-    >>> from exam.objects import call, effect
+    >>> from exam.mock import call
+    >>> from exam.helpers effect
     >>> side_effect = effect((call(1), 'with 1'), (call(2), 'with 2'))
     >>> side_effect(1)
     'with 1'
@@ -363,6 +364,14 @@ If you would like to customize this behavior, subclass `effect` and redefine you
 
     class myeffect(effect):
         call_class = my_call_class
+
+``effect`` also allows you to build sequential callables:
+
+    >>> side_effect = effect((call(1), ['with 1', 'with2']))
+    >>> side_effect(1)
+    'with 1'
+    >>> side_effect(1)
+    'with 2'
 
 ``exam.mock``
 ~~~~~~~~~~~~~

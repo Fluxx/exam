@@ -155,8 +155,26 @@ class effect(list):
     def __call__(self, *args, **kwargs):
         this_call = self.call_class(*args, **kwargs)
 
-        for call_obj, return_value in self:
-            if call_obj == this_call:
-                return return_value
+        for call, return_values in self:
+            if call == this_call:
+                try: 
+                    return next(return_values)
+                except StopIteration:
+                    #we're dealing with an empty iterator
+                    raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
+                except TypeError:
+                    #we're not dealing with an iterator
+                    if return_values.__class__.__name__ in ['list', 'tuple']:
+                        #only list or tuples should be turned into iterators, strings are excluded
+                        iterator = iter(return_values)
+                        #replace the config list or tuple with it's iterator equivalent
+                        self[self.index((call, return_values))] = (call, iterator)
+                        try:
+                            return next(iterator)
+                        except StopIteration:
+                            #the list or tuple was empty to begin with
+                            raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
+                    #in case of anything except a list or tuple
+                    return return_values
 
         raise TypeError('Unknown effect for: %r, %r' % (args, kwargs))
