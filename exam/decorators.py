@@ -13,6 +13,10 @@ class fixture(object):
         self.thing = thing
         self.args = args
         self.kwargs = kwargs
+        doc = kwargs.get('doc')
+        if doc is None:
+            doc = thing.__doc__
+        self.__doc__ = doc
 
     def __get__(self, testcase, type=None):
         if not testcase:

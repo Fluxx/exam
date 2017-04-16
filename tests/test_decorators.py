@@ -20,6 +20,7 @@ class Dummy(object):
 
     @fixture
     def number(self):
+        """Some docstring with type annotations."""
         return 42
 
     @fixture
@@ -43,6 +44,12 @@ class ExtendedDummy(Dummy):
 
 
 class TestFixture(TestCase):
+
+    def test_docstring(self):
+        self.assertEqual(
+            Dummy.number.__doc__,
+            """Some docstring with type annotations."""
+        )
 
     def test_converts_method_to_property(self):
         self.assertEqual(Dummy().number, 42)
